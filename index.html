@@ -1200,6 +1200,42 @@ example3@domain.com"></textarea>
     </div>
 
     <script>
+          // --- CLICK-DROPDOWN MENU LOGIC ---
+// (Yeh code "Tools" aur "Profile" wale menu ko kholne ke liye hai)
+document.addEventListener('click', function(e) {
+    // Check karein ke click dropdown button par ya uske andar hua hai ya nahi
+    const dropdownTrigger = e.target.closest(".has-dropdown");
+
+    // Agar click dropdown ke bahar hua hai, to saare khule hue menus band kar dein
+    if (!dropdownTrigger) {
+        document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+        return;
+    }
+
+    // Agar click dropdown par hua hai, to uske neeche wala menu dhoondein
+    const currentDropdown = dropdownTrigger.parentElement.querySelector('.dropdown-menu');
+    
+    if (currentDropdown) {
+        e.preventDefault(); // Link ko follow karne se rokein
+        const isShown = currentDropdown.classList.contains('show');
+
+        // Pehle saare doosre menus band karein
+        document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => {
+            if (dropdown !== currentDropdown) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Ab is menu ko kholein ya band karein
+        if (!isShown) {
+            currentDropdown.classList.add('show');
+        } else {
+            currentDropdown.classList.remove('show');
+        }
+    }
+});
    // YEH POORA NAYA CODE AUTH-HANDLER.JS MEIN PASTE KAREIN
 
 const sgMail = require('@sendgrid/mail');
@@ -1289,42 +1325,6 @@ exports.handler = async (event) => {
         return { statusCode: 500, body: JSON.stringify({ message: 'Server error.', error: error.message }) };
     }
 };
-        // --- CLICK-DROPDOWN MENU LOGIC ---
-// (Yeh code "Tools" aur "Profile" wale menu ko kholne ke liye hai)
-document.addEventListener('click', function(e) {
-    // Check karein ke click dropdown button par ya uske andar hua hai ya nahi
-    const dropdownTrigger = e.target.closest(".has-dropdown");
-
-    // Agar click dropdown ke bahar hua hai, to saare khule hue menus band kar dein
-    if (!dropdownTrigger) {
-        document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => {
-            dropdown.classList.remove('show');
-        });
-        return;
-    }
-
-    // Agar click dropdown par hua hai, to uske neeche wala menu dhoondein
-    const currentDropdown = dropdownTrigger.parentElement.querySelector('.dropdown-menu');
-    
-    if (currentDropdown) {
-        e.preventDefault(); // Link ko follow karne se rokein
-        const isShown = currentDropdown.classList.contains('show');
-
-        // Pehle saare doosre menus band karein
-        document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => {
-            if (dropdown !== currentDropdown) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        // Ab is menu ko kholein ya band karein
-        if (!isShown) {
-            currentDropdown.classList.add('show');
-        } else {
-            currentDropdown.classList.remove('show');
-        }
-    }
-});
     </script>
 </body>
 </html>
