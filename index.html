@@ -1200,342 +1200,95 @@ example3@domain.com"></textarea>
     </div>
 
     <script>
-    // --- DOM elements for auth UI ---
-    const ctaButton = document.getElementById('ctaButton');
-    const userProfile = document.getElementById('userProfile');
-    const signupNavLi = document.getElementById('signupNavLi'); 
-    const redirectMessage = document.getElementById('redirectMessage'); 
-    const profileDropdownEmail = document.getElementById('profileDropdownEmail');
-    const profileImageInput = document.getElementById('profileImageInput');
-    const mainProfilePicContainer = document.getElementById('profilePic');
-    const dropdownAvatarContainer = document.querySelector('.profile-avatar');
+   // YEH POORA NAYA CODE AUTH-HANDLER.JS MEIN PASTE KAREIN
 
-    // --- AUTHENTICATION STATE MANAGEMENT ---
-    const authState = {
-        isAuthenticated: false,
-        userEmail: null,
-        
-        init() {
-            const authData = localStorage.getItem('authData');
-            if (authData) {
-                const { isAuthenticated, userEmail } = JSON.parse(authData);
-                this.isAuthenticated = isAuthenticated;
-                this.userEmail = userEmail;
-            }
-            updateNavigationState(); 
-            loadProfilePicture();
-        },
-        
-        login(email) {
-            this.isAuthenticated = true;
-            this.userEmail = email;
-            this.save();
-            updateNavigationState(); 
-        },
-        
-        logout() {
-            this.isAuthenticated = false;
-            this.userEmail = null;
-            localStorage.removeItem('authData');
-            localStorage.removeItem('profileImageData');
-            updateNavigationState(); 
-            resetProfilePictures();
-        },
-        
-        save() {
-            const authData = JSON.stringify({
-                isAuthenticated: this.isAuthenticated,
-                userEmail: this.userEmail
-            });
-            localStorage.setItem('authData', authData);
-        }
-    };
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    // --- Function to update all navigation UI based on auth state ---
-    function updateNavigationState() {
-        if (authState.isAuthenticated) {
-            ctaButton.style.display = 'none';
-            userProfile.style.display = 'block';
-            signupNavLi.style.display = 'none'; 
-            profileDropdownEmail.textContent = authState.userEmail;
-        } else {
-            ctaButton.style.display = 'inline-flex';
-            userProfile.style.display = 'none';
-            signupNavLi.style.display = 'list-item'; 
-        }
+// Yahan hum users ka record rakhenge. Asal production app mein yeh database hota hai.
+const users = []; 
+let tempOTP = {}; 
+
+exports.handler = async (event) => {
+    if (event.httpMethod !== 'POST') {
+        return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    // --- User Action Functions ---
-    function logoutUser() {
-        if (confirm("Are you sure you want to log out?")) {
-            authState.logout();
-            alert("You have been successfully logged out.");
-            showMainPage();
-        }
-    }
-    
-    // --- PROFILE PICTURE FUNCTIONALITY ---
-    function uploadProfileImage() { profileImageInput.click(); }
-    profileImageInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const imageDataUrl = reader.result;
-            localStorage.setItem('profileImageData', imageDataUrl);
-            updateProfilePictures(imageDataUrl);
-        };
-        reader.readAsDataURL(file);
-    });
+    try {
+        const data = JSON.parse(event.body);
+        const { email, password, otp } = data;
 
-    function updateProfilePictures(imageDataUrl) {
-        mainProfilePicContainer.innerHTML = `<img src="${imageDataUrl}" alt="Profile Picture">`;
-        dropdownAvatarContainer.innerHTML = `<img src="${imageDataUrl}" alt="Profile Picture">`;
-    }
-
-    function resetProfilePictures() {
-        mainProfilePicContainer.innerHTML = `<i class="fas fa-user"></i>`;
-        dropdownAvatarContainer.innerHTML = `<i class="fas fa-user"></i>`;
-    }
-
-    function loadProfilePicture() {
-        const savedImage = localStorage.getItem('profileImageData');
-        if (savedImage && authState.isAuthenticated) {
-            updateProfilePictures(savedImage);
-        }
-    }
-
-    // Initialize authentication state on page load
-    authState.init();
-
-    // --- PAGE MANAGEMENT ---
-    const mainPageDiv = document.getElementById('mainPage');
-    const toolPageDiv = document.getElementById('toolPage');
-    const signupPageDiv = document.getElementById('signupPage');
-
-    function showMainPage() {
-        mainPageDiv.style.display = 'flex';
-        toolPageDiv.style.display = 'none';
-        signupPageDiv.style.display = 'none';
-        window.scrollTo(0, 0); 
-    }
-
-    function showToolPage(toolType) {
-        if (!authState.isAuthenticated) {
-            showSignupPage(true); 
-            return;
-        }
-        
-        mainPageDiv.style.display = 'none';
-        signupPageDiv.style.display = 'none';
-        toolPageDiv.style.display = 'block';
-        
-        let toolTitle = 'SEO Tool';
-        switch(toolType) {
-            case 'email-verifier': toolTitle = 'Visual Bulk Email Verifier'; break;
-            case 'image-to-text': toolTitle = 'Image to Text Converter'; break;
-            case 'da-pa-checker': toolTitle = 'DA PA Checker'; break;
-        }
-        
-        document.querySelector('#toolPage h1').innerHTML = `<i class="fas fa-${getToolIcon(toolType)}"></i> ${toolTitle}`;
-        window.scrollTo(0, 0); 
-    }
-
-    function getToolIcon(toolType) {
-        switch(toolType) {
-            case 'email-verifier': return 'envelope';
-            case 'image-to-text': return 'image';
-            case 'da-pa-checker': return 'chart-line';
-            default: return 'toolbox';
-        }
-    }
-
-    function showSignupPage(fromToolRedirect = false) {
-        redirectMessage.style.display = fromToolRedirect ? 'block' : 'none';
-        mainPageDiv.style.display = 'none';
-        toolPageDiv.style.display = 'none';
-        signupPageDiv.style.display = 'block';
-        document.getElementById('signupStep1').style.display = 'block';
-        document.getElementById('signupStep2').style.display = 'none';
-        document.getElementById('signupForm').reset();
-        errorMsg.style.display = 'none';
-        errorMsg2.style.display = 'none';
-        window.scrollTo(0, 0); 
-    }
-
-    // --- CLICK-DROPDOWN ---
-    document.addEventListener('click', function(e) {
-        const dropdownTrigger = e.target.closest(".has-dropdown");
-        if (!dropdownTrigger) {
-            document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => dropdown.classList.remove('show'));
-            return;
-        }
-        const currentDropdown = dropdownTrigger.parentElement.querySelector('.dropdown-menu');
-        if (currentDropdown) {
-             e.preventDefault();
-             const isShown = currentDropdown.classList.contains('show');
-             document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => dropdown.classList.remove('show'));
-             if (!isShown) currentDropdown.classList.add('show');
-        }
-    });
-
-    // --- EMAIL VERIFIER TOOL LOGIC (UNCHANGED) ---
-    const API_KEYS = ['ae238d0021a84aff9c040f5ce789e39c','REPLACE_WITH_YOUR_KEY_2','REPLACE_WITH_YOUR_KEY_3','REPLACE_WITH_YOUR_KEY_4','REPLACE_WITH_YOUR_KEY_5'];
-    let currentApiKeyIndex = 0, apiKeyUsage = [], totalVerifiedCount = 0, deliverableCount = 0, riskyCount = 0, undeliverableCount = 0;
-    const verifyBtn = document.getElementById('verifyBtn'), resetBtn = document.getElementById('resetBtn'), emailListTextarea = document.getElementById('emailList'), statusElement = document.getElementById('status'), progressContainer = document.getElementById('progressContainer'), progressBar = document.getElementById('progressBar'), totalCountSpan = document.getElementById('totalCountSpan'), deliverableCountSpan = document.getElementById('deliverableCount'), riskyCountSpan = document.getElementById('riskyCount'), undeliverableCountSpan = document.getElementById('undeliverableCount'), resultsGrid = document.getElementById('resultsGrid'), apiStatusContainer = document.getElementById('apiStatusContainer');
-    const STORAGE_KEY = 'emailVerifierTotalCount';
-    function initializeApiStatus(){apiKeyUsage=[],apiStatusContainer.innerHTML='';const e=document.createElement("ul");e.className="api-status-list";for(let t=0;t<API_KEYS.length;t++){apiKeyUsage.push({used:0,status:"Active"});const s=document.createElement("li");s.id=`apiKeyItem${t}`,s.innerHTML=`<i class="fas fa-key"></i> Credit ${t+1}: <span class="status-text" id="apiKeyStatus${t}">0 used</span>`,e.appendChild(s)}apiStatusContainer.appendChild(e),updateApiStatusUI()}
-    function updateApiStatusUI(){for(let e=0;e<API_KEYS.length;e++){const t=document.getElementById(`apiKeyItem${e}`),s=document.getElementById(`apiKeyStatus${e}`);if(t&&s){const a=apiKeyUsage[e];"Exhausted"===a.status?(s.textContent="Limit Reached",t.classList.add("exhausted-key")):(s.textContent=`${a.used} used`,t.classList.remove("exhausted-key")),t.classList.toggle("active-key",e===currentApiKeyIndex)}}}
-    function delay(e){return new Promise(t=>setTimeout(t,e))}
-    function loadInitialCount(){totalVerifiedCount=parseInt(localStorage.getItem(STORAGE_KEY))||0,totalCountSpan.textContent=totalVerifiedCount}
-    function resetApplication(){if(confirm("Are you sure? This will reset the email list, results, and 'Total Verified' counter.\n\nAPI/Credit Usage will NOT be reset.")){emailListTextarea.value="",resultsGrid.innerHTML="",statusElement.textContent="Ready for a new batch.",progressContainer.style.display="none",progressBar.style.width="0%",deliverableCount=0,riskyCount=0,undeliverableCount=0,deliverableCountSpan.textContent="0",riskyCountSpan.textContent="0",undeliverableCountSpan.textContent="0",totalVerifiedCount=0,totalCountSpan.textContent="0",localStorage.removeItem(STORAGE_KEY),verifyBtn.disabled=!1}}
-    verifyBtn.addEventListener("click",async()=>{const e=emailListTextarea.value.trim().split("\n").filter(Boolean);if(0===e.length)return void alert("Please enter at least one email to verify.");resultsGrid.innerHTML="",statusElement.textContent="Starting verification...",verifyBtn.disabled=!0,progressContainer.style.display="block",progressBar.style.width="0%",deliverableCount=0,riskyCount=0,undeliverableCount=0,deliverableCountSpan.textContent="0",riskyCountSpan.textContent="0",undeliverableCountSpan.textContent="0";for(let t=0;t<e.length;t++){if(currentApiKeyIndex>=API_KEYS.length){statusElement.textContent=`Verification stopped. All ${API_KEYS.length} credit sources are exhausted.`;break}const s=e[t];statusElement.textContent=`Verifying email ${t+1} of ${e.length}: ${s}`,progressBar.style.width=`${(t+1)/e.length*100}%`,await verifyEmail(s.trim()),totalVerifiedCount++,totalCountSpan.textContent=totalVerifiedCount,localStorage.setItem(STORAGE_KEY,totalVerifiedCount),t<e.length-1&&await delay(1500)}currentApiKeyIndex<API_KEYS.length&&(statusElement.textContent="Verification complete!"),verifyBtn.disabled=!1});
-    async function verifyEmail(e){if(currentApiKeyIndex>=API_KEYS.length)return void addResultCard({email:e,deliverability:"Error",quality_score:"All credit sources exhausted."});const t=API_KEYS[currentApiKeyIndex],s=`https://emailvalidation.abstractapi.com/v1/?api_key=${t}&email=${e}`;try{const t=await fetch(s);if(422===t.status||429===t.status)return apiKeyUsage[currentApiKeyIndex].status="Exhausted",statusElement.textContent=`Credit #${currentApiKeyIndex+1} limit reached. Switching...`,currentApiKeyIndex++,updateApiStatusUI(),await delay(1000),verifyEmail(e);t.ok&&(apiKeyUsage[currentApiKeyIndex].used++,updateApiStatusUI());const a=await t.json();if(!t.ok){a.email=e,a.deliverability="Error";let s=a.error?.message||`API Error: ${t.statusText}`;401===t.status&&(s="Credit Limit Expired"),a.quality_score=s}addResultCard(a)}catch(t){addResultCard({email:e,deliverability:"Error",quality_score:"Network Error"})}}
-    function addResultCard(e){const t=(e.deliverability||"Error").toUpperCase();switch(t){case"DELIVERABLE":deliverableCount++,deliverableCountSpan.textContent=deliverableCount;break;case"RISKY":case"UNKNOWN":riskyCount++,riskyCountSpan.textContent=riskyCount;break;case"UNDELIVERABLE":case"ERROR":undeliverableCount++,undeliverableCountSpan.textContent=undeliverableCount}const s=document.createElement("div");s.className="result-card";const a=`dot-${t.toLowerCase()}`,n=`text-${t.toLowerCase()}`,i="ERROR"===t?e.quality_score:t;let r="";"ERROR"===t||!e.is_catchall_email||(e.is_catchall_email.value&&(r+=createBadgeHtml("Catch-all","badge-catchall")),e.is_role_email.value&&(r+=createBadgeHtml("Role Account","badge-role")),e.is_disposable_email.value&&(r+=createBadgeHtml("Disposable","badge-disposable")),e.is_free_email.value&&(r+=createBadgeHtml("Free Provider","badge-free"))),""===r&&(r='<span style="color: #999; font-size: 14px;">No additional details</span>'),s.innerHTML=`\n            <div class="email">${e.email||"N/A"}</div>\n            <div class="status-line">\n                <span class="status-dot ${a}"></span>\n                <span class="${n}">${i}</span>\n            </div>\n            <div class="details-container">${r}</div>\n        `,resultsGrid.appendChild(s)}
-    function createBadgeHtml(e,t){return`<span class="detail-badge ${t}">${e}</span>`}resetBtn.addEventListener("click",resetApplication);document.addEventListener("DOMContentLoaded",()=>{loadInitialCount(),initializeApiStatus()});
-
-    // --- NEW AND IMPROVED SIGNUP/LOGIN LOGIC ---
-    const signupStep1 = document.getElementById('signupStep1');
-    const signupStep2 = document.getElementById('signupStep2');
-    const signupEmail = document.getElementById('signupEmail');
-    const signupPassword = document.getElementById('signupPassword');
-    const otpInputs = document.querySelectorAll('.otp-input');
-    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-    const errorMsg = document.getElementById('errorMsg');
-    const errorMsg2 = document.getElementById('errorMsg2');
-    const togglePassword = document.getElementById('togglePassword');
-    const otpEmailDisplay = document.getElementById('otpEmailDisplay');
-    const continueBtn = document.getElementById('continueBtn');
-    const backBtn = document.getElementById('backBtn');
-    
-    let generatedOtp = null;
-
-    // Helper functions to manage user accounts in localStorage
-    function getUserAccounts() {
-        const accounts = localStorage.getItem('userAccounts');
-        return accounts ? JSON.parse(accounts) : [];
-    }
-
-    function saveUserAccounts(accounts) {
-        localStorage.setItem('userAccounts', JSON.stringify(accounts));
-    }
-
-    // Main button to handle both Login and Signup initiation
-    continueBtn.addEventListener('click', () => {
-        const email = signupEmail.value.trim();
-        const password = signupPassword.value.trim();
-        errorMsg.style.display = 'none';
-
-        // Basic validation
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            errorMsg.textContent = 'Please enter a valid email address.';
-            errorMsg.style.display = 'block';
-            return;
-        }
-        if (!password || password.length < 6) {
-            errorMsg.textContent = 'Password must be at least 6 characters long.';
-            errorMsg.style.display = 'block';
-            return;
-        }
-
-        const accounts = getUserAccounts();
-        const existingUser = accounts.find(user => user.email === email);
-
-        if (existingUser) {
-            // --- LOGIN ATTEMPT ---
-            if (existingUser.password === password) {
-                // Correct password: Log in directly
-                authState.login(email);
-                alert('Welcome back! You have been logged in successfully.');
-                showToolPage('email-verifier');
+        // Route 1: Login ya Signup ki koshish
+        if (email && password && !otp) {
+            const existingUser = users.find(u => u.email === email);
+            if (existingUser) {
+                // LOGIN
+                if (existingUser.password === password) {
+                    return { statusCode: 200, body: JSON.stringify({ message: 'Login successful!', status: 'LOGGED_IN' }) };
+                } else {
+                    return { statusCode: 401, body: JSON.stringify({ message: 'Incorrect password.', status: 'ERROR' }) };
+                }
             } else {
-                // Incorrect password: Show error and stop
-                errorMsg.textContent = 'Incorrect password. Please try again.';
-                errorMsg.style.display = 'block';
-            }
-        } else {
-            // --- SIGNUP ATTEMPT (Email not found) ---
-            // Proceed to OTP verification to create a new account
-            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            const originalText = continueBtn.innerHTML;
-            continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending code...';
-            continueBtn.disabled = true;
+                // SIGNUP -> OTP Bhejein
+                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                tempOTP[email] = { otp: generatedOtp, password: password, timestamp: Date.now() };
 
-            // Simulate sending OTP
-            setTimeout(() => {
-                otpEmailDisplay.textContent = email;
-                signupStep1.style.display = 'none';
-                signupStep2.style.display = 'block';
-                otpInputs[0].focus();
-                
-                continueBtn.innerHTML = originalText;
-                continueBtn.disabled = false;
-                
-                // This alert is for testing. In a real app, an email would be sent.
-                alert(`TESTING: Your OTP is: ${generatedOtp}`);
-            }, 1500);
+                const msgToUser = {
+                    to: email,
+                    from: 'replyminfo@gmail.com', // **Aap ka verified email**
+                    subject: 'Your Verification Code for getguestposts.com',
+                    text: `Your OTP is: ${generatedOtp}`,
+                    html: `<strong>Your OTP is: ${generatedOtp}</strong>`,
+                };
+
+                try {
+                    await sgMail.send(msgToUser);
+                    return { statusCode: 200, body: JSON.stringify({ message: 'OTP has been sent to your email.', status: 'OTP_SENT' }) };
+                } catch (error) {
+                    console.error('SendGrid Error:', error.response ? error.response.body : error);
+                    return { statusCode: 500, body: JSON.stringify({ message: 'Could not send OTP email.' }) };
+                }
+            }
         }
-    });
-
-    togglePassword.addEventListener('click', () => {
-        const type = signupPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-        signupPassword.setAttribute('type', type);
-        togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-    });
-
-    otpInputs.forEach((input, index) => {
-        input.addEventListener('input', () => {
-            if (input.value.length === 1 && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
-        });
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace' && input.value === '' && index > 0) {
-                otpInputs[index - 1].focus();
-            }
-        });
-    });
-
-    // Button to finalize account creation after correct OTP
-    verifyOtpBtn.addEventListener('click', () => {
-        let enteredOtp = Array.from(otpInputs).map(input => input.value).join('');
         
-        if (enteredOtp.length !== 6) {
-            errorMsg2.textContent = 'Please enter the complete 6-digit code.';
-            errorMsg2.style.display = 'block';
-            return;
+        // Route 2: OTP Verify karna
+        else if (email && otp) {
+            const tempData = tempOTP[email];
+            if (tempData && tempData.otp === otp) {
+                // Step 1: Naya user banayein aur save karein
+                const newUser = { email: email, password: tempData.password };
+                users.push(newUser);
+                delete tempOTP[email]; 
+
+                // ***** NAYA FEATURE YAHAN HAI *****
+                // Step 2: Admin (Yani Aap) ko notification email bhejein
+                const msgToAdmin = {
+                    to: 'replyminfo@gmail.com', // **Aap ka email jis par notification aayega**
+                    from: 'replyminfo@gmail.com', // **Aap ka verified email**
+                    subject: '🎉 New User Signup on getguestposts.com!',
+                    text: `A new user has just signed up on your website.\n\nEmail: ${email}`,
+                    html: `<p>A new user has just signed up on your website.</p><h3>Email: ${email}</h3>`,
+                };
+
+                // Chupke se admin ko email bhej dein (user ko iska pata nahi chalega)
+                sgMail.send(msgToAdmin)
+                    .then(() => console.log('Admin notification sent successfully.'))
+                    .catch(error => console.error('Failed to send admin notification:', error));
+                
+                // Step 3: User ko success ka response bhejein
+                return { statusCode: 200, body: JSON.stringify({ message: 'Account created successfully!', status: 'ACCOUNT_CREATED' }) };
+            } else {
+                return { statusCode: 400, body: JSON.stringify({ message: 'Invalid OTP.', status: 'ERROR' }) };
+            }
         }
-        errorMsg2.style.display = 'none';
-
-        if (enteredOtp === generatedOtp) {
-            // Save the new user to localStorage
-            const accounts = getUserAccounts();
-            const newUser = {
-                email: signupEmail.value.trim(),
-                password: signupPassword.value.trim()
-            };
-            accounts.push(newUser);
-            saveUserAccounts(accounts);
-
-            // Log the new user in
-            authState.login(newUser.email);
-            alert('Account created successfully! Welcome to getguestposts.com');
-            showToolPage('email-verifier');
-        } else {
-            errorMsg2.textContent = 'Invalid code. Please try again.';
-            errorMsg2.style.display = 'block';
-            otpInputs.forEach(input => input.value = '');
-            otpInputs[0].focus();
+        
+        else {
+            return { statusCode: 400, body: JSON.stringify({ message: 'Invalid request.', status: 'ERROR' }) };
         }
-    });
-
-    backBtn.addEventListener('click', () => {
-        signupStep2.style.display = 'none';
-        signupStep1.style.display = 'block';
-        errorMsg.style.display = 'none';
-        errorMsg2.style.display = 'none';
-    });
+    } catch (error) {
+        return { statusCode: 500, body: JSON.stringify({ message: 'Server error.', error: error.message }) };
+    }
+};
     </script>
 </body>
 </html>
