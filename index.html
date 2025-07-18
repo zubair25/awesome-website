@@ -1009,8 +1009,8 @@
                     </nav>
                     <div class="header-actions">
                         <a href="#" id="ctaButton" class="cta-button"><i class="fas fa-comments"></i> Let's Talk</a>
-                        <div id="userProfile" style="display: none;">
-                            <div id="profilePic" class="has-dropdown">
+                        <div id="userProfile" class="has-dropdown" style="display: none;">
+                            <div id="profilePic">
                                 <i class="fas fa-user"></i>
                             </div>
                             <ul class="dropdown-menu">
@@ -1200,120 +1200,60 @@ example3@domain.com"></textarea>
     </div>
 
     <script>
-        // Agar click dropdown button par hua hai
-    if (dropdownContainer) {
-        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
-        if (dropdownMenu) {
-            e.preventDefault();
-            const isShown = dropdownMenu.classList.contains('show');
-            // Pehle saare doosre khule hue menu band kar do
-            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                if (menu !== dropdownMenu) {
-                    menu.classList.remove('show');
-                }
-            });
-            // Ab is menu ko toggle karo
-            dropdownMenu.classList.toggle('show');
-        }
-    }
-});
-     // Ab is menu ko kholein ya band karein
-        if (!isShown) {
-            currentDropdown.classList.add('show');
-        } else {
-            currentDropdown.classList.remove('show');
-        }
-    }
-});
-   // YEH POORA NAYA CODE AUTH-HANDLER.JS MEIN PASTE KAREIN
+    document.addEventListener('DOMContentLoaded', () => {
 
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        // --- Dropdown Menu Logic ---
+        document.addEventListener('click', (e) => {
+            // Find if a dropdown toggle button was clicked (works for both Tools and Profile)
+            const dropdownToggle = e.target.closest('.has-dropdown > a, .has-dropdown > div#profilePic');
+            // Find if the click was inside an open menu
+            const isClickInsideMenu = e.target.closest('.dropdown-menu');
+            
+            // Get all currently open dropdowns
+            const openDropdowns = document.querySelectorAll('.dropdown-menu.show');
 
-// Yahan hum users ka record rakhenge. Asal production app mein yeh database hota hai.
-const users = []; 
-let tempOTP = {}; 
-
-exports.handler = async (event) => {
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
-    }
-
-    try {
-        const data = JSON.parse(event.body);
-        const { email, password, otp } = data;
-
-        // Route 1: Login ya Signup ki koshish
-        if (email && password && !otp) {
-            const existingUser = users.find(u => u.email === email);
-            if (existingUser) {
-                // LOGIN
-                if (existingUser.password === password) {
-                    return { statusCode: 200, body: JSON.stringify({ message: 'Login successful!', status: 'LOGGED_IN' }) };
-                } else {
-                    return { statusCode: 401, body: JSON.stringify({ message: 'Incorrect password.', status: 'ERROR' }) };
-                }
-            } else {
-                // SIGNUP -> OTP Bhejein
-                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-                tempOTP[email] = { otp: generatedOtp, password: password, timestamp: Date.now() };
-
-                const msgToUser = {
-                    to: email,
-                    from: 'replyminfo@gmail.com', // **Aap ka verified email**
-                    subject: 'Your Verification Code for getguestposts.com',
-                    text: `Your OTP is: ${generatedOtp}`,
-                    html: `<strong>Your OTP is: ${generatedOtp}</strong>`,
-                };
-
-                try {
-                    await sgMail.send(msgToUser);
-                    return { statusCode: 200, body: JSON.stringify({ message: 'OTP has been sent to your email.', status: 'OTP_SENT' }) };
-                } catch (error) {
-                    console.error('SendGrid Error:', error.response ? error.response.body : error);
-                    return { statusCode: 500, body: JSON.stringify({ message: 'Could not send OTP email.' }) };
-                }
-            }
-        }
-        
-        // Route 2: OTP Verify karna
-        else if (email && otp) {
-            const tempData = tempOTP[email];
-            if (tempData && tempData.otp === otp) {
-                // Step 1: Naya user banayein aur save karein
-                const newUser = { email: email, password: tempData.password };
-                users.push(newUser);
-                delete tempOTP[email]; 
-
-                // ***** NAYA FEATURE YAHAN HAI *****
-                // Step 2: Admin (Yani Aap) ko notification email bhejein
-                const msgToAdmin = {
-                    to: 'replyminfo@gmail.com', // **Aap ka email jis par notification aayega**
-                    from: 'replyminfo@gmail.com', // **Aap ka verified email**
-                    subject: '🎉 New User Signup on getguestposts.com!',
-                    text: `A new user has just signed up on your website.\n\nEmail: ${email}`,
-                    html: `<p>A new user has just signed up on your website.</p><h3>Email: ${email}</h3>`,
-                };
-
-                // Chupke se admin ko email bhej dein (user ko iska pata nahi chalega)
-                sgMail.send(msgToAdmin)
-                    .then(() => console.log('Admin notification sent successfully.'))
-                    .catch(error => console.error('Failed to send admin notification:', error));
+            if (dropdownToggle) {
+                e.preventDefault(); // Prevent link from navigating
+                const parent = dropdownToggle.closest('.has-dropdown');
+                const dropdownMenu = parent.querySelector('.dropdown-menu');
                 
-                // Step 3: User ko success ka response bhejein
-                return { statusCode: 200, body: JSON.stringify({ message: 'Account created successfully!', status: 'ACCOUNT_CREATED' }) };
-            } else {
-                return { statusCode: 400, body: JSON.stringify({ message: 'Invalid OTP.', status: 'ERROR' }) };
+                // Check if the clicked dropdown was already open
+                const wasOpen = dropdownMenu.classList.contains('show');
+                
+                // First, close all open dropdowns to avoid conflicts
+                openDropdowns.forEach(menu => menu.classList.remove('show'));
+
+                // If the clicked dropdown was NOT open, open it now.
+                if (!wasOpen) {
+                    dropdownMenu.classList.add('show');
+                }
+            } else if (!isClickInsideMenu) {
+                // If the click was anywhere else on the page (and not inside a menu), close all dropdowns.
+                openDropdowns.forEach(menu => menu.classList.remove('show'));
             }
-        }
-        
-        else {
-            return { statusCode: 400, body: JSON.stringify({ message: 'Invalid request.', status: 'ERROR' }) };
-        }
-    } catch (error) {
-        return { statusCode: 500, body: JSON.stringify({ message: 'Server error.', error: error.message }) };
-    }
-};
+        });
+
+        // --- Placeholder logic for page navigation (to show the concept) ---
+        window.showMainPage = () => {
+            document.getElementById('mainPage').style.display = 'block';
+            document.getElementById('toolPage').style.display = 'none';
+            document.getElementById('signupPage').style.display = 'none';
+        };
+        window.showToolPage = (tool) => {
+            console.log(`Navigating to ${tool} tool.`);
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('toolPage').style.display = 'block';
+            document.getElementById('signupPage').style.display = 'none';
+        };
+        window.showSignupPage = () => {
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('toolPage').style.display = 'none';
+            document.getElementById('signupPage').style.display = 'block';
+        };
+
+        // Note: other JS for tool functionality, user login etc. would go here.
+        // The provided auth handler code is server-side (Node.js) and should not be placed here.
+    });
     </script>
 </body>
 </html>
