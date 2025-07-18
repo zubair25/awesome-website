@@ -1200,20 +1200,7 @@ example3@domain.com"></textarea>
     </div>
 
     <script>
-        // --- NAYA AUR BEHTAR CLICK-DROPDOWN MENU LOGIC ---
-document.addEventListener('click', function(e) {
-    const isDropdownButton = e.target.matches('.has-dropdown > a, .has-dropdown > a *, .has-dropdown > div, .has-dropdown > div *');
-    const dropdownContainer = e.target.closest('.has-dropdown');
-
-    // Agar click menu ke bahar hua hai to saare menu band kar do
-    if (!isDropdownButton && !e.target.closest('.dropdown-menu')) {
-        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-            menu.classList.remove('show');
-        });
-        return;
-    }
-
-    // Agar click dropdown button par hua hai
+        // Agar click dropdown button par hua hai
     if (dropdownContainer) {
         const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
         if (dropdownMenu) {
@@ -1230,40 +1217,7 @@ document.addEventListener('click', function(e) {
         }
     }
 });
-
-    // Agar click dropdown button par hua hai
-    if (dropdownContainer) {
-        const dropdownMenu = dropdownContainer.querySelector('.dropdown-menu');
-        if (dropdownMenu) {
-            e.preventDefault();
-            const isShown = dropdownMenu.classList.contains('show');
-            // Pehle saare doosre khule hue menu band kar do
-            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                if (menu !== dropdownMenu) {
-                    menu.classList.remove('show');
-                }
-            });
-            // Ab is menu ko toggle karo
-            dropdownMenu.classList.toggle('show');
-        }
-    }
-});
-
-    // Agar click dropdown par hua hai, to uske neeche wala menu dhoondein
-    const currentDropdown = dropdownTrigger.parentElement.querySelector('.dropdown-menu');
-    
-    if (currentDropdown) {
-        e.preventDefault(); // Link ko follow karne se rokein
-        const isShown = currentDropdown.classList.contains('show');
-
-        // Pehle saare doosre menus band karein
-        document.querySelectorAll(".dropdown-menu.show").forEach(dropdown => {
-            if (dropdown !== currentDropdown) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        // Ab is menu ko kholein ya band karein
+     // Ab is menu ko kholein ya band karein
         if (!isShown) {
             currentDropdown.classList.add('show');
         } else {
