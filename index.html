@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- GLOBAL STYLES --- */
-        :root {
-            --primary: #0d6b84; --secondary: #fd7e14; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d; --white: #ffffff; --text: #333333;
-        }
+        :root { --primary: #0d6b84; --secondary: #fd7e14; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d; --white: #ffffff; --text: #333333; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: var(--white); color: var(--text); line-height: 1.6; scroll-behavior: smooth; }
         
@@ -28,9 +26,6 @@
         nav ul { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 25px; }
         nav a { text-decoration: none; color: var(--primary); font-weight: 500; font-size: 16px; transition: color 0.2s; display: flex; align-items: center; gap: 5px; }
         nav a:hover { color: var(--secondary); }
-        nav a i { font-size: 14px; }
-        
-        /* --- DROPDOWN & PROFILE --- */
         .has-dropdown { position: relative; }
         .dropdown-menu { display: none; position: absolute; top: 150%; left: -20px; background-color: var(--white); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 8px; list-style: none; min-width: 220px; z-index: 1100; padding: 10px 0; }
         .dropdown-menu a { padding: 12px 20px; display: flex; align-items: center; gap: 10px; width: 100%; color: var(--text); font-weight: normal; transition: all 0.2s; }
@@ -50,7 +45,7 @@
         .cta-button { background-color: var(--secondary); color: var(--white); padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: background-color 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .cta-button:hover { background-color: #e86a04; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(253, 126, 20, 0.3); }
         
-        /* --- HERO SECTION --- */
+        /* --- HERO & FOOTER --- */
         .hero { background: linear-gradient(135deg, #0d6b84 0%, #0a576c 100%); color: var(--white); padding: 100px 0; flex-grow: 1; display: flex; align-items: center; }
         .hero-content { max-width: 65%; }
         .hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin: 0 0 25px 0; }
@@ -61,39 +56,18 @@
         .btn-primary:hover { background-color: transparent; border-color: var(--white); transform: translateY(-3px); }
         .btn-outline { background-color: transparent; color: var(--white); border: 2px solid var(--white); }
         .btn-outline:hover { background-color: rgba(255, 255, 255, 0.1); transform: translateY(-3px); }
+        footer { background-color: var(--dark); color: var(--white); padding: 40px 0 20px; text-align: center; }
+        .footer-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .footer-logo { font-size: 28px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .footer-logo span { color: var(--secondary); display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid var(--secondary); border-radius: 50%; }
+        .copyright { margin-top: 20px; color: rgba(255, 255, 255, 0.6); font-size: 14px; }
         
         /* --- TOOL PAGE --- */
         #toolPage { display: none; min-height: 100vh; padding: 30px 0; }
-        #toolPage .container { max-width: 1200px; margin: 0 auto; }
         .tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .btn-home { text-decoration: none; background-color: var(--light); color: var(--primary); padding: 10px 20px; border-radius: 30px; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--primary); }
-        .btn-home:hover { background-color: var(--primary); color: var(--white); transform: translateY(-2px); }
+        .btn-home { text-decoration: none; background-color: var(--light); color: var(--primary); padding: 10px 20px; border-radius: 30px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--primary); }
         #toolPage h1 { color: var(--primary); text-align: center; margin: 0; font-size: 2.5rem; font-weight: 700; }
         .tool-wrapper { border: 2px solid var(--secondary); border-radius: 15px; padding: 30px; background-color: var(--white); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); }
-        .header-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin-bottom: 25px; }
-        .total-counter, .api-status-container { display: inline-flex; align-items: center; border: 2px solid var(--secondary); background-color: #fff8f0; padding: 10px 20px; border-radius: 50px; color: var(--text); font-size: 15px; font-weight: 500; gap: 8px; }
-        .total-counter span { font-weight: bold; color: var(--primary); font-size: 18px; }
-        .api-status-container { border-color: var(--primary); background-color: #f0f8ff; }
-        .api-status-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
-        .status-text { font-weight: bold; font-size: 15px; color: var(--primary); }
-        .active-key { font-weight: bold; color: var(--primary); }
-        .exhausted-key, .exhausted-key .status-text { color: var(--danger) !important; }
-        label { font-weight: 500; margin-bottom: 10px; display: block; color: var(--text); }
-        textarea { width: 100%; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 10px; height: 180px; resize: vertical; font-family: inherit; font-size: 15px; }
-        .button-group button { flex: 1; padding: 15px; color: white; border: none; border-radius: 8px; font-size: 17px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        #verifyBtn { background-color: var(--primary); }
-        #resetBtn { background-color: var(--gray); }
-        .progress-container { width: 100%; background-color: #e9ecef; border-radius: 10px; margin-top: 20px; height: 12px; overflow: hidden; display: none; }
-        .progress-bar { width: 0%; height: 100%; background-color: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
-        #status { text-align: center; margin-top: 15px; font-style: italic; color: var(--gray); height: 25px; font-size: 15px; }
-        .status-key { border: 1px solid #e0e0e0; background-color: #f9f9f9; padding: 20px; margin-top: 30px; border-radius: 10px; }
-        .summary-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
-        .summary-box { background-color: var(--light); border: 1px solid #dee2e6; border-radius: 10px; padding: 20px; text-align: center; }
-        .summary-box h4 { margin: 0 0 15px 0; font-size: 16px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
-        .summary-box .count { font-size: 32px; font-weight: 700; }
-        #deliverableCount { color: var(--success); } #riskyCount { color: var(--warning); } #undeliverableCount { color: var(--danger); }
-        #resultsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px; }
-        .result-card { background-color: var(--white); border: 1px solid #e0e0e0; border-radius: 12px; padding: 25px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); }
         
         /* --- AUTH PAGES (SIGNUP, FORGOT, RESET) --- */
         #signupPage, #forgotPasswordPage, #resetPasswordPage { display: none; min-height: 100vh; padding: 50px 0; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); }
@@ -102,6 +76,7 @@
         .auth-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: var(--secondary); border-radius: 2px; }
         #redirectMessage { background-color: #e7f4ff; border-left: 4px solid var(--info); padding: 15px; margin: 0 0 25px 0; border-radius: 6px; font-size: 15px; display: none; }
         .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text); }
         input { width: 100%; padding: 14px 20px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
         .password-container { position: relative; }
         .password-container button { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray); font-size: 16px; }
@@ -120,15 +95,9 @@
         .form-link a { color: var(--primary); text-decoration: none; font-size: 14px; }
         .form-link a:hover { text-decoration: underline; color: var(--secondary); }
         
-        /* --- FOOTER & RESPONSIVE --- */
-        footer { background-color: var(--dark); color: var(--white); padding: 40px 0 20px; text-align: center; }
-        .footer-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .footer-logo { font-size: 28px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-        .footer-logo span { color: var(--secondary); display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 2px solid var(--secondary); border-radius: 50%; }
-        .footer-links { display: flex; gap: 25px; margin: 20px 0; }
-        .footer-links a { color: rgba(255, 255, 255, 0.8); text-decoration: none; }
-        .copyright { margin-top: 20px; color: rgba(255, 255, 255, 0.6); font-size: 14px; }
+        /* --- RESPONSIVE & ANIMATIONS --- */
         @media (max-width: 768px) { .header-container { flex-direction: column; gap: 20px; } .main-nav { width: 100%; justify-content: center; } .hero-buttons { justify-content: center; } .auth-form { padding: 30px; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -205,11 +174,12 @@
     <div id="toolPage">
         <div class="container">
             <div class="tool-header">
-                <h1><i class="fas fa-envelope"></i> Visual Bulk Email Verifier</h1>
+                <h1></h1> <!-- Yeh JavaScript se fill hoga -->
                 <a href="#" onclick="showMainPage()" class="btn-home"><i class="fas fa-home"></i> Back to Home</a>
             </div>
             <div class="tool-wrapper">
-                <!-- Tool Page ka saara content yahan hai -->
+                <!-- Yahan Tool ka content aayega. Abhi ke liye, yeh Email Verifier ka hai. -->
+                <label>Email Verifier Tool Content Goes Here...</label>
             </div>
         </div>
     </div>
@@ -315,12 +285,12 @@
     const resetPasswordPage = document.getElementById('resetPasswordPage');
     const ctaButton = document.getElementById('ctaButton');
     const userProfile = document.getElementById('userProfile');
-    const signupNavLi = document.getElementById('signupNavLi'); 
+    const signupNavLi = document.getElementById('signupNavLi');
     const profileDropdownEmail = document.getElementById('profileDropdownEmail');
     const profileImageInput = document.getElementById('profileImageInput');
     const mainProfilePicContainer = document.getElementById('profilePic');
     const dropdownAvatarContainer = document.querySelector('.profile-avatar');
-    let resetToken = null; // Reset token ko save karne ke liye
+    let resetToken = null;
 
     // --- PAGE MANAGEMENT ---
     function showPage(pageToShow) {
@@ -329,20 +299,12 @@
         });
         window.scrollTo(0, 0);
     }
-    
+
     function showMainPage() { showPage(mainPageDiv); }
-    function showToolPage(toolType) {
-        if (!authState.isAuthenticated) {
-            showSignupPage(true); 
-            return;
-        }
-        showPage(toolPageDiv);
-        // ... baqi tool page ka logic ...
-    }
     function showSignupPage(fromToolRedirect = false) {
         const redirectMessage = document.getElementById('redirectMessage');
         redirectMessage.style.display = fromToolRedirect ? 'block' : 'none';
-        redirectMessage.textContent = fromToolRedirect ? 'Action Required: Please log in to access tools.' : '';
+        redirectMessage.innerHTML = fromToolRedirect ? '<strong>Action Required:</strong> Please log in or sign up to access tools.' : '';
         showPage(signupPageDiv);
     }
     function showForgotPasswordPage() { showPage(forgotPasswordPage); }
@@ -350,40 +312,40 @@
         resetToken = token;
         showPage(resetPasswordPage);
     }
+    function showToolPage(toolType) {
+        if (!authState.isAuthenticated) {
+            showSignupPage(true);
+            return;
+        }
+        showPage(toolPageDiv);
+        let toolTitle = 'SEO Tool', toolIcon = 'toolbox';
+        switch (toolType) {
+            case 'email-verifier': toolTitle = 'Visual Bulk Email Verifier'; toolIcon = 'envelope'; break;
+            case 'image-to-text': toolTitle = 'Image to Text Converter'; toolIcon = 'image'; break;
+            case 'da-pa-checker': toolTitle = 'DA PA Checker'; toolIcon = 'chart-line'; break;
+        }
+        document.querySelector('#toolPage h1').innerHTML = `<i class="fas fa-${toolIcon}"></i> ${toolTitle}`;
+    }
 
     // --- AUTHENTICATION STATE ---
     const authState = {
-        isAuthenticated: false,
-        userEmail: null,
+        isAuthenticated: false, userEmail: null,
         init() {
             const authData = sessionStorage.getItem('authData');
-            if (authData) {
-                const { isAuthenticated, userEmail } = JSON.parse(authData);
-                this.isAuthenticated = isAuthenticated;
-                this.userEmail = userEmail;
-            }
-            updateNavigationState(); 
-            loadProfilePicture();
+            if (authData) { Object.assign(this, JSON.parse(authData)); }
+            updateNavigationState(); loadProfilePicture();
         },
-        login(email) {
-            this.isAuthenticated = true; this.userEmail = email; this.save(); updateNavigationState(); 
-        },
-        logout() {
-            this.isAuthenticated = false; this.userEmail = null; sessionStorage.clear(); updateNavigationState(); resetProfilePictures(); showMainPage();
-        },
-        save() {
-            sessionStorage.setItem('authData', JSON.stringify({ isAuthenticated: this.isAuthenticated, userEmail: this.userEmail }));
-        }
+        login(email) { this.isAuthenticated = true; this.userEmail = email; this.save(); updateNavigationState(); },
+        logout() { this.isAuthenticated = false; this.userEmail = null; sessionStorage.clear(); updateNavigationState(); resetProfilePictures(); showMainPage(); },
+        save() { sessionStorage.setItem('authData', JSON.stringify({ isAuthenticated: this.isAuthenticated, userEmail: this.userEmail })); }
     };
 
     // --- UI FUNCTIONS ---
     function updateNavigationState() {
-        if (authState.isAuthenticated) {
-            ctaButton.style.display = 'none'; userProfile.style.display = 'block'; signupNavLi.style.display = 'none'; 
-            profileDropdownEmail.textContent = authState.userEmail;
-        } else {
-            ctaButton.style.display = 'inline-flex'; userProfile.style.display = 'none'; signupNavLi.style.display = 'list-item'; 
-        }
+        userProfile.style.display = authState.isAuthenticated ? 'block' : 'none';
+        ctaButton.style.display = authState.isAuthenticated ? 'none' : 'inline-flex';
+        signupNavLi.style.display = authState.isAuthenticated ? 'none' : 'list-item';
+        if (authState.isAuthenticated) profileDropdownEmail.textContent = authState.userEmail;
     }
     function logoutUser() { if (confirm("Are you sure?")) { authState.logout(); alert("Logged out."); } }
 
@@ -394,7 +356,8 @@
             document.querySelectorAll(".dropdown-menu.show").forEach(menu => menu.classList.remove('show'));
             return;
         }
-        if (e.target.closest('a') && !e.target.closest('#profilePic')) {
+        // Agar link par click ho (jo button nahi hai), to menu band kar do aur link ko kaam karne do
+        if (e.target.closest('a') && !e.target.closest('#profilePic > a, .has-dropdown > a')) {
              document.querySelectorAll(".dropdown-menu.show").forEach(menu => menu.classList.remove('show'));
              return;
         }
@@ -415,68 +378,102 @@
         reader.onload = () => { sessionStorage.setItem('profileImageData', reader.result); updateProfilePictures(reader.result); };
         reader.readAsDataURL(e.target.files[0]);
     });
-    function updateProfilePictures(imageDataUrl) { mainProfilePicContainer.innerHTML = `<img src="${imageDataUrl}">`; dropdownAvatarContainer.innerHTML = `<img src="${imageDataUrl}">`; }
+    function updateProfilePictures(url) { mainProfilePicContainer.innerHTML = `<img src="${url}">`; dropdownAvatarContainer.innerHTML = `<img src="${url}">`; }
     function resetProfilePictures() { mainProfilePicContainer.innerHTML = `<i class="fas fa-user"></i>`; dropdownAvatarContainer.innerHTML = `<i class="fas fa-user"></i>`; }
     function loadProfilePicture() { const img = sessionStorage.getItem('profileImageData'); if (img) updateProfilePictures(img); }
 
     // --- SIGNUP & LOGIN ---
     const continueBtn = document.getElementById('continueBtn');
     continueBtn.addEventListener('click', async () => {
-        // ... pehle jaisa signup/login ka logic ...
-    });
-    // ... baqi signup ka logic waisa hi ...
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value.trim();
+        const errorDiv = document.getElementById('errorMsg');
+        errorDiv.style.display = 'none';
 
-    // --- FORGOT PASSWORD ---
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
+            errorDiv.textContent = 'Please enter a valid email and a password of at least 6 characters.';
+            errorDiv.style.display = 'block'; return;
+        }
+        continueBtn.disabled = true; continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch('/.netlify/functions/auth-handler', { method: 'POST', body: JSON.stringify({ email, password, action: 'login_signup' }) });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message);
+
+            if (result.status === 'LOGGED_IN') {
+                authState.login(email); alert(result.message); showToolPage('email-verifier');
+            } else if (result.status === 'OTP_SENT') {
+                document.getElementById('otpEmailDisplay').textContent = email;
+                document.getElementById('signupStep1').style.display = 'none';
+                document.getElementById('signupStep2').style.display = 'block';
+                alert(result.message);
+            }
+        } catch (err) { errorDiv.textContent = err.message; errorDiv.style.display = 'block'; }
+        continueBtn.disabled = false; continueBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
+    });
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    verifyOtpBtn.addEventListener('click', async () => {
+        const otp = Array.from(document.querySelectorAll('.otp-input')).map(i => i.value).join('');
+        const email = document.getElementById('signupEmail').value.trim();
+        const errorDiv = document.getElementById('errorMsg2');
+        errorDiv.style.display = 'none';
+
+        if (otp.length !== 6) { errorDiv.textContent = 'Enter 6-digit code.'; errorDiv.style.display = 'block'; return; }
+        verifyOtpBtn.disabled = true; verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res = await fetch('/.netlify/functions/auth-handler', { method: 'POST', body: JSON.stringify({ email, otp, action: 'verify_otp' }) });
+            const result = await res.json();
+            if (!res.ok) throw new Error(result.message);
+            authState.login(email); alert(result.message); showToolPage('email-verifier');
+        } catch (err) { errorDiv.textContent = err.message; errorDiv.style.display = 'block'; }
+        verifyOtpBtn.disabled = false; verifyOtpBtn.innerHTML = 'Verify & Create Account';
+    });
+
+    // --- FORGOT & RESET PASSWORD ---
     const sendResetLinkBtn = document.getElementById('sendResetLinkBtn');
     sendResetLinkBtn.addEventListener('click', async () => {
         const email = document.getElementById('forgotEmail').value.trim();
-        const errorDiv = document.getElementById('forgotErrorMsg');
-        const successDiv = document.getElementById('forgotSuccessMsg');
+        const errorDiv = document.getElementById('forgotErrorMsg'), successDiv = document.getElementById('forgotSuccessMsg');
         errorDiv.style.display = 'none'; successDiv.style.display = 'none';
 
         if (!email) { errorDiv.textContent = 'Email is required.'; errorDiv.style.display = 'block'; return; }
-        
         sendResetLinkBtn.disabled = true; sendResetLinkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
         try {
             const res = await fetch('/.netlify/functions/auth-handler', { method: 'POST', body: JSON.stringify({ email, action: 'forgot_password' }) });
             const result = await res.json();
             if (!res.ok) throw new Error(result.message);
-            successDiv.textContent = result.message;
-            successDiv.style.display = 'block';
-        } catch (err) {
-            errorDiv.textContent = err.message;
-            errorDiv.style.display = 'block';
-        }
+            successDiv.textContent = result.message; successDiv.style.display = 'block';
+        } catch (err) { errorDiv.textContent = err.message; errorDiv.style.display = 'block'; }
         sendResetLinkBtn.disabled = false; sendResetLinkBtn.innerHTML = 'Send Reset Link';
     });
-
-    // --- RESET PASSWORD ---
     const updatePasswordBtn = document.getElementById('updatePasswordBtn');
     updatePasswordBtn.addEventListener('click', async () => {
-        const newPassword = document.getElementById('resetPassword').value;
-        const confirmPassword = document.getElementById('confirmResetPassword').value;
+        const newPassword = document.getElementById('resetPassword').value, confirmPassword = document.getElementById('confirmResetPassword').value;
         const errorDiv = document.getElementById('resetErrorMsg');
         errorDiv.style.display = 'none';
 
         if (newPassword.length < 6) { errorDiv.textContent = 'Password too short.'; errorDiv.style.display = 'block'; return; }
         if (newPassword !== confirmPassword) { errorDiv.textContent = 'Passwords do not match.'; errorDiv.style.display = 'block'; return; }
-
         updatePasswordBtn.disabled = true; updatePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
         try {
             const res = await fetch('/.netlify/functions/auth-handler', { method: 'POST', body: JSON.stringify({ token: resetToken, newPassword, action: 'reset_password' }) });
             const result = await res.json();
             if (!res.ok) throw new Error(result.message);
-            alert(result.message);
-            showSignupPage();
-        } catch (err) {
-            errorDiv.textContent = err.message;
-            errorDiv.style.display = 'block';
-        }
+            alert(result.message); showSignupPage();
+        } catch (err) { errorDiv.textContent = err.message; errorDiv.style.display = 'block'; }
         updatePasswordBtn.disabled = false; updatePasswordBtn.innerHTML = 'Update Password';
     });
     
+    // --- UNIVERSAL HELPERS ---
+    document.querySelectorAll('.togglePassword').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const input = btn.previousElementSibling;
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            btn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+    });
+
     // --- PAGE LOAD INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
@@ -489,18 +486,6 @@
         }
         authState.init();
     });
-
-    // Universal Toggle Password Visibility
-    document.querySelectorAll('.togglePassword').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.previousElementSibling;
-            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-            input.setAttribute('type', type);
-            btn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
-        });
-    });
-
-    // ... Email Verifier Tool ka poora logic yahan paste karein ...
     </script>
 </body>
 </html>
