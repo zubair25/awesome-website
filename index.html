@@ -255,214 +255,173 @@
     </div>
 
     <script>
-    // --- DOM ELEMENTS ---
-    const mainPageDiv = document.getElementById('mainPage');
-    const toolPageDiv = document.getElementById('toolPage');
-    const signupPageDiv = document.getElementById('signupPage');
-    const forgotPasswordPage = document.getElementById('forgotPasswordPage');
-    const resetPasswordPage = document.getElementById('resetPasswordPage');
-    const ctaButton = document.getElementById('ctaButton');
-    const userProfile = document.getElementById('userProfile');
-    const signupNavLi = document.getElementById('signupNavLi');
-    const profileDropdownEmail = document.getElementById('profileDropdownEmail');
-    const profileImageInput = document.getElementById('profileImageInput');
-    const mainProfilePicContainer = document.getElementById('profilePic');
-    const dropdownAvatarContainer = document.querySelector('.profile-avatar');
-    let resetToken = null;
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Guest Posts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS styles remain the same, no changes needed here */
+        :root { --primary: #0d6b84; --secondary: #fd7e14; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d; --white: #ffffff; --text: #333333; }
+        body { font-family: 'Segoe UI', sans-serif; }
+        .auth-form { max-width: 500px; margin: 50px auto; padding: 40px; background: #f8f9fa; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .auth-title { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .btn-auth { width: 100%; padding: 15px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .btn-auth:disabled { background-color: var(--gray); }
+        .otp-section { background: #e9f5ff; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .error { color: var(--danger); margin-top: 10px; }
+        #redirectMessage { padding: 15px; background: #d4edda; border-left: 5px solid var(--success); margin-bottom: 20px; }
+        .otp-input-group { display: flex; justify-content: space-between; }
+        .otp-input { width: 50px; height: 60px; text-align: center; font-size: 24px; }
+    </style>
+</head>
+<body>
 
-    // --- PAGE MANAGEMENT ---
-    function showPage(pageToShow) {
-        [mainPageDiv, toolPageDiv, signupPageDiv, forgotPasswordPage, resetPasswordPage].forEach(page => {
-            page.style.display = (page === pageToShow) ? 'block' : 'none';
-        });
-        window.scrollTo(0, 0);
-    }
-
-    function showMainPage() { showPage(mainPageDiv); }
-    function showSignupPage(fromToolRedirect = false, isBack = false) {
-        if (isBack) {
-            document.getElementById('signupStep1').style.display = 'block';
-            document.getElementById('signupStep2').style.display = 'none';
-            return;
-        }
-        const redirectMessage = document.getElementById('redirectMessage');
-        redirectMessage.style.display = fromToolRedirect ? 'block' : 'none';
-        redirectMessage.innerHTML = fromToolRedirect ? '<strong>Action Required:</strong> Please log in or sign up to access tools.' : '';
-        document.getElementById('signupStep1').style.display = 'block';
-        document.getElementById('signupStep2').style.display = 'none';
-        showPage(signupPageDiv);
-    }
-    function showForgotPasswordPage() { showPage(forgotPasswordPage); }
-    function showResetPasswordPage(token) {
-        resetToken = token;
-        showPage(resetPasswordPage);
-    }
-    function showToolPage(toolType) {
-        if (!authState.isAuthenticated) {
-            showSignupPage(true);
-            return;
-        }
-        showPage(toolPageDiv);
-        let toolTitle = 'SEO Tool', toolIcon = 'toolbox';
-        switch (toolType) {
-            case 'email-verifier': toolTitle = 'Visual Bulk Email Verifier'; toolIcon = 'envelope'; break;
-            case 'image-to-text': toolTitle = 'Image to Text Converter'; toolIcon = 'image'; break;
-            case 'da-pa-checker': toolTitle = 'DA PA Checker'; toolIcon = 'chart-line'; break;
-        }
-        document.querySelector('#toolPage h1').innerHTML = `<i class="fas fa-${toolIcon}"></i> ${toolTitle}`;
-    }
-
-    // --- AUTHENTICATION STATE ---
-    const authState = {
-        isAuthenticated: false, userEmail: null,
-        init() {
-            const authData = sessionStorage.getItem('authData');
-            if (authData) { Object.assign(this, JSON.parse(authData)); }
-            updateNavigationState(); loadProfilePicture();
-        },
-        login(email) { this.isAuthenticated = true; this.userEmail = email; this.save(); updateNavigationState(); },
-        logout() { this.isAuthenticated = false; this.userEmail = null; sessionStorage.clear(); updateNavigationState(); resetProfilePictures(); showMainPage(); },
-        save() { sessionStorage.setItem('authData', JSON.stringify({ isAuthenticated: this.isAuthenticated, userEmail: this.userEmail })); }
-    };
-
-    // --- UI FUNCTIONS ---
-    function updateNavigationState() {
-        userProfile.style.display = authState.isAuthenticated ? 'block' : 'none';
-        ctaButton.style.display = authState.isAuthenticated ? 'none' : 'inline-flex';
-        signupNavLi.style.display = authState.isAuthenticated ? 'none' : 'list-item';
-        if (authState.isAuthenticated) profileDropdownEmail.textContent = authState.userEmail;
-    }
-    function logoutUser() { if (confirm("Are you sure?")) { authState.logout(); alert("Logged out."); } }
-
-    // --- DROPDOWN MENU LOGIC ---
-    document.addEventListener('click', function(e) {
-        const dropdownTrigger = e.target.closest(".has-dropdown");
-        if (!dropdownTrigger) {
-            document.querySelectorAll(".dropdown-menu.show").forEach(menu => menu.classList.remove('show'));
-            return;
-        }
-        if (e.target.closest('a') && !e.target.closest('#profilePic > a, .has-dropdown > a')) {
-             document.querySelectorAll(".dropdown-menu.show").forEach(menu => menu.classList.remove('show'));
-             return;
-        }
-        e.preventDefault();
-        const dropdownMenu = dropdownTrigger.querySelector('.dropdown-menu');
-        if (dropdownMenu) {
-            const isShown = dropdownMenu.classList.contains('show');
-            document.querySelectorAll(".dropdown-menu.show").forEach(menu => menu.classList.remove('show'));
-            if (!isShown) dropdownMenu.classList.add('show');
-        }
-    });
-
-    // --- PROFILE PICTURE ---
-    function uploadProfileImage() { profileImageInput.click(); }
-    profileImageInput.addEventListener('change', (e) => {
-        if (!e.target.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = () => { sessionStorage.setItem('profileImageData', reader.result); updateProfilePictures(reader.result); };
-        reader.readAsDataURL(e.target.files[0]);
-    });
-    function updateProfilePictures(url) { mainProfilePicContainer.innerHTML = `<img src="${url}">`; dropdownAvatarContainer.innerHTML = `<img src="${url}">`; }
-    function resetProfilePictures() { mainProfilePicContainer.innerHTML = `<i class="fas fa-user"></i>`; dropdownAvatarContainer.innerHTML = `<i class="fas fa-user"></i>`; }
-    function loadProfilePicture() { const img = sessionStorage.getItem('profileImageData'); if (img) updateProfilePictures(img); }
-
-    // --- SIGNUP & LOGIN ---
+    <!-- HTML for the signup form remains the same -->
+    <div id="signupPage">
+        <div class="auth-form">
+            <h1 class="auth-title">Login or Create Account</h1>
+            <div id="redirectMessage" style="display: none;">
+                <strong>Action Required:</strong> Please log in or sign up to access tools.
+            </div>
+            <form id="signupForm" onsubmit="event.preventDefault();">
+                <div id="signupStep1">
+                    <div class="form-group">
+                        <label for="signupEmail"><i class="fas fa-envelope"></i> Email Address:</label>
+                        <input type="email" id="signupEmail" required value="zubaizubair10@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword"><i class="fas fa-lock"></i> Password:</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <button type="button" id="continueBtn" class="btn-auth">Continue</button>
+                    <div class="error" id="errorMsg"></div>
+                </div>
+                <div id="signupStep2" style="display: none;" class="otp-section">
+                     <p>We've sent a 6-digit code to: <strong id="otpEmailDisplay"></strong></p>
+                     <div class="form-group">
+                         <label><i class="fas fa-key"></i> Verification Code:</label>
+                         <div class="otp-input-group">
+                             <input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1">
+                         </div>
+                     </div>
+                     <button type="button" id="verifyOtpBtn" class="btn-auth">Verify & Create Account</button>
+                     <div class="error" id="errorMsg2"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+    // --- DOM Elements ---
     const continueBtn = document.getElementById('continueBtn');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    
+    // --- SIGNUP & LOGIN (ASAL CODE, SIMULATION KE BAGHAIR) ---
     continueBtn.addEventListener('click', async () => {
         const email = document.getElementById('signupEmail').value.trim();
         const password = document.getElementById('signupPassword').value.trim();
         const errorDiv = document.getElementById('errorMsg');
+        errorDiv.textContent = '';
         errorDiv.style.display = 'none';
 
-        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
-            errorDiv.textContent = 'Please enter a valid email and a password of at least 6 characters.';
-            errorDiv.style.display = 'block'; return;
+        if (!email || password.length < 6) {
+            errorDiv.textContent = 'Please enter a valid email and password (min 6 characters).';
+            errorDiv.style.display = 'block';
+            return;
         }
-        continueBtn.disabled = true; continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        continueBtn.disabled = true;
+        continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
         
         try {
-            // --- FIX START ---
-            // Simulating the server call to show the OTP screen
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate 1 second delay
+            // ✔️ YEH ASAL API CALL HAI JO SERVER KO REQUEST BHEJ RAHA HAI
+            const response = await fetch('/.netlify/functions/auth-handler', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, action: 'login_signup' })
+            });
 
-            const userExists = false; // Assume user is new for this simulation
+            const result = await response.json();
 
-            if (userExists) {
-                // Logic for existing user login (simulated)
-                authState.login(email);
-                alert("Login kamyab ho gaya! (Simulation)");
-                showToolPage('email-verifier');
-            } else {
-                // Logic for new user signup (simulated OTP)
+            if (!response.ok) {
+                throw new Error(result.message || 'An unknown error occurred.');
+            }
+
+            // Server se response anay ke baad
+            if (result.status === 'OTP_SENT') {
+                // Agar server ne kaha ke OTP bhej diya hai, to OTP screen dikhao
                 document.getElementById('otpEmailDisplay').textContent = email;
                 document.getElementById('signupStep1').style.display = 'none';
                 document.getElementById('signupStep2').style.display = 'block';
-                alert("Baraye meharbani, hum ne aap ke email par aik OTP code bheja hai. (Yeh aik simulation hai)");
+                alert(result.message); // Server se aya hua message dikhao
+            } else if (result.status === 'LOGGED_IN') {
+                // Agar user pehle se mojood tha aur login ho gaya
+                alert(result.message);
+                // Yahan user ko dashboard par bhej dein
+                // window.location.href = '/dashboard'; 
             }
-            // --- FIX END ---
-        } catch (err) { 
-            errorDiv.textContent = err.message; 
-            errorDiv.style.display = 'block'; 
+
+        } catch (err) {
+            errorDiv.textContent = err.message;
+            errorDiv.style.display = 'block';
         } finally {
-            continueBtn.disabled = false; 
-            continueBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
+            continueBtn.disabled = false;
+            continueBtn.innerHTML = 'Continue';
         }
     });
 
-    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
     verifyOtpBtn.addEventListener('click', async () => {
-        const otp = Array.from(document.querySelectorAll('.otp-input')).map(i => i.value).join('');
         const email = document.getElementById('signupEmail').value.trim();
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
         const errorDiv = document.getElementById('errorMsg2');
+        errorDiv.textContent = '';
         errorDiv.style.display = 'none';
 
-        if (otp.length !== 6) { 
-            errorDiv.textContent = 'Poora 6-digit code enter karein.'; 
-            errorDiv.style.display = 'block'; 
-            return; 
+        if (otp.length !== 6) {
+            errorDiv.textContent = 'Please enter the complete 6-digit code.';
+            errorDiv.style.display = 'block';
+            return;
         }
-        verifyOtpBtn.disabled = true; 
-        verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
         try {
-            // --- FIX START ---
-            // Simulating a successful OTP verification
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate 1 second delay
-            
-            authState.login(email); 
-            alert("Account kamyabi se ban gaya! (Simulation)"); 
-            showToolPage('email-verifier');
-            // --- FIX END ---
-        } catch (err) { 
-            errorDiv.textContent = err.message; 
-            errorDiv.style.display = 'block'; 
+             // ✔️ YEH ASAL API CALL HAI OTP VERIFY KARNE KE LIYE
+            const response = await fetch('/.netlify/functions/auth-handler', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp, action: 'verify_otp' })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'An unknown error occurred.');
+            }
+
+            alert(result.message); // "Account created successfully!"
+            // Yahan user ko dashboard par bhej dein
+            // window.location.href = '/dashboard';
+
+        } catch (err) {
+            errorDiv.textContent = err.message;
+            errorDiv.style.display = 'block';
         } finally {
-            verifyOtpBtn.disabled = false; 
+            verifyOtpBtn.disabled = false;
             verifyOtpBtn.innerHTML = 'Verify & Create Account';
         }
     });
-
-    // --- Other functions (FORGOT & RESET PASSWORD, HELPERS, PAGE LOAD) ---
-    // These remain unchanged from the previous version.
-    // ...
-    const sendResetLinkBtn = document.getElementById('sendResetLinkBtn');
-    sendResetLinkBtn.addEventListener('click', async () => {
-        // This function logic
-    });
-    
-    document.querySelectorAll('.togglePassword').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const input = btn.previousElementSibling;
-            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-            input.setAttribute('type', type);
-            btn.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        showMainPage();
-        authState.init();
-    });
+    </script>
+</body>
+</html>
     </script>
 </body>
 </html>
