@@ -1,66 +1,13 @@
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// auth-handler.js file mein...
 
-// Database ki jagah, hum in-memory arrays istemal kar rahe hain
-let users = [];
-let tempOTP = {};
-let resetTokens = {};
-
-exports.handler = async (event) => {
-    if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
-
-    try {
-        const data = JSON.parse(event.body);
-        const { email, password, otp, newPassword, token, action } = data;
-
-        // ROUTE: FORGOT PASSWORD
-        if (action === 'forgot_password') {
-            const user = users.find(u => u.email === email);
-            if (!user) {
-                return { statusCode: 404, body: JSON.stringify({ message: 'No account found with that email.' }) };
-            }
-            // Ek naya, unique token banayein
-            const resetToken = `${Date.now()}-${Math.random().toString(36).substr(2)}`;
-            resetTokens[resetToken] = { email: email, expires: Date.now() + 3600000 }; // 1 ghante ke liye valid
-
-            // User ko reset link email karein
-            const resetLink = `${event.headers.referer}?token=${resetToken}`;
-            const msg = {
-                to: email,
-                from: 'replyminfo@gmail.com', // Apna verified email
-                subject: 'Password Reset Request',
-                text: `Click this link to reset your password: ${resetLink}`,
-                html: `<p>Click this link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`,
-            };
-
-            await sgMail.send(msg);
-            return { statusCode: 200, body: JSON.stringify({ message: 'Password reset link sent to your email.' }) };
-        }
-
-        // ROUTE: RESET PASSWORD
-        if (action === 'reset_password') {
-            const tokenData = resetTokens[token];
-            if (!tokenData || tokenData.expires < Date.now()) {
-                return { statusCode: 400, body: JSON.stringify({ message: 'Invalid or expired reset token.' }) };
-            }
-            const user = users.find(u => u.email === tokenData.email);
-            if (!user) {
-                return { statusCode: 404, body: JSON.stringify({ message: 'User not found.' }) };
-            }
-            // Password update karein
-            user.password = newPassword;
-            delete resetTokens[token]; // Token istemal ho gaya, ab delete kar dein
-            
-            return { statusCode: 200, body: JSON.stringify({ message: 'Password updated successfully. Please log in.' }) };
-        }
-
-        // Baqi ka purana signup aur login ka logic waisa hi
-        // ... (Signup aur Login ka code yahan paste karein) ...
-        
-        return { statusCode: 400, body: JSON.stringify({ message: 'Invalid action.' }) };
-
-    } catch (error) {
-        console.error('Server Error:', error);
-        return { statusCode: 500, body: JSON.stringify({ message: 'An internal server error occurred.' }) };
-    }
+const msgToUser = {
+    to: email, // Yeh user ka email hai
+    
+    // 👇 YAHAN APNA VERIFIED EMAIL LIKHEIN 👇
+    from: 'zubaizubair10@gmail.com', // Yahan woh email likhein jo aap ne abhi SendGrid par verify kiya hai
+    
+    subject: `Your Verification Code for getguestposts.com`,
+    html: `<strong>Aap ka verification code hai: ${generatedOtp}</strong>`,
 };
+
+// Baaqi code waisa hi rahega...
