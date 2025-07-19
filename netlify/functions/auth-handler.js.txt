@@ -1,117 +1,84 @@
-// Is file ko chalane ke liye, aapko 'npm install @sendgrid/mail' command run karni hogi.
-const sgMail = require('@sendgrid/mail');
+// Yeh server-side code hai, user ke browser mein nahi chalega.
 
-// API Key Netlify environment variable se khud-ba-khud utha li jayegi.
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-// Database ki jagah, hum in-memory arrays istemal kar rahe hain.
-// Production mein aap inki jagah database (jaise MongoDB, FaunaDB) istemal kareinge.
-let users = []; 
-let tempOTPs = {};
-let resetTokens = {};
+// Abhi testing ke liye, hum users ko ek simple array mein rakhenge.
+// Asal website ke liye yahan database (jaise MongoDB, FaunaDB) istemal hota hai.
+const users = [];
+let tempOTP = {}; // OTPs ko waqti tor par save karne ke liye
 
 exports.handler = async (event) => {
-    // Sirf POST requests ko ijazat dein
+    // Sirf POST request ko handle karein
     if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: JSON.stringify({ message: 'Method Not Allowed' }) };
+        return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
     try {
         const data = JSON.parse(event.body);
-        const { email, password, otp, newPassword, token, action } = data;
-        
-        // Apna verified email yahan sirf aek jagah likhein
-        const SENDER_EMAIL = 'replyminfo@gmail.com'; 
+        const { email, password, otp } = data;
 
-        // ACTION: NAYA ACCOUNT BANANA YA LOGIN KARNA
-        if (action === 'login_signup' && email && password) {
+        // --- Step 1: LOGIN ya SIGNUP ka Faisla ---
+        if (email && password && !otp) {
             const existingUser = users.find(u => u.email === email);
 
-            // Agar user pehle se mojood hai, to login karein
             if (existingUser) {
+                // LOGIN ki koshish
                 if (existingUser.password === password) {
-                    return { statusCode: 200, body: JSON.stringify({ message: 'Login kamyab ho gaya!', status: 'LOGGED_IN' }) };
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify({ message: 'Login successful!', status: 'LOGGED_IN' }),
+                    };
                 } else {
-                    return { statusCode: 401, body: JSON.stringify({ message: 'Ghalat password.', status: 'ERROR' }) };
+                    return {
+                        statusCode: 401,
+                        body: JSON.stringify({ message: 'Incorrect password.', status: 'ERROR' }),
+                    };
                 }
-            } 
-            // Agar naya user hai, to OTP bhejein
-            else {
-                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-                tempOTPs[email] = { otp: generatedOtp, password: password, timestamp: Date.now() };
-
-                await sgMail.send({
-                    to: email,
-                    from: SENDER_EMAIL, // Verified Email
-                    subject: `Your Verification Code for getguestposts.com`,
-                    html: `<strong>Aap ka verification code hai: ${generatedOtp}</strong>`,
-                });
-                return { statusCode: 200, body: JSON.stringify({ message: 'OTP aap ke email par bhej diya gaya hai.', status: 'OTP_SENT' }) };
-            }
-        }
-        
-        // ACTION: OTP VERIFY KARNA
-        else if (action === 'verify_otp' && email && otp) {
-            const tempData = tempOTPs[email];
-            if (tempData && tempData.otp === otp) {
-                // Check karein ke OTP expire to nahi ho gaya (10 minutes)
-                if (Date.now() - tempData.timestamp > 600000) {
-                    delete tempOTPs[email];
-                    return { statusCode: 400, body: JSON.stringify({ message: 'OTP expire ho chuka hai. Dobara koshish karein.', status: 'ERROR' }) };
-                }
-                // User banayein aur save karein
-                users.push({ email: email, password: tempData.password });
-                delete tempOTPs[email]; // Istemaal shuda OTP delete kar dein
-                return { statusCode: 200, body: JSON.stringify({ message: 'Account kamyabi se ban gaya!', status: 'ACCOUNT_CREATED' }) };
             } else {
-                return { statusCode: 400, body: JSON.stringify({ message: 'Ghalat OTP.', status: 'ERROR' }) };
+                // SIGNUP ki koshish -> OTP Bhejein
+                const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                tempOTP[email] = { otp: generatedOtp, password: password, timestamp: Date.now() };
+
+                // Yahan SendGrid se email bhejne ka code aayega. Abhi hum sirf response bhej rahe hain.
+                // NOTE: Asal mein email bhejne ke liye neeche wala commented code istemal karna hoga.
+                
+                console.log(`OTP for ${email} is ${generatedOtp}`); // Server par OTP dekhne ke liye
+
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ message: 'OTP sent to your email for verification.', status: 'OTP_SENT' }),
+                };
             }
-        }
-
-        // ACTION: PASSWORD BHOOL GAYE
-        else if (action === 'forgot_password' && email) {
-            // Hum user ko nahi batate ke email mojood hai ya nahi (security ke liye)
-            const resetToken = `${Date.now()}-${Math.random().toString(36).substr(2)}`;
-            resetTokens[resetToken] = { email: email, expires: Date.now() + 3600000 }; // 1 ghante ke liye valid
-
-            // User ko reset link email karein
-            const resetLink = `${event.headers.referer}?token=${resetToken}`;
-            
-            await sgMail.send({
-                to: email,
-                from: SENDER_EMAIL, // Verified Email
-                subject: 'Password Reset Request',
-                html: `<p>Password reset karne ke liye is link par click karein: <a href="${resetLink}">${resetLink}</a></p>`,
-            });
-
-            return { statusCode: 200, body: JSON.stringify({ message: `Agar is email se account mojood hai, to aek reset link bhej diya gaya hai.` }) };
         }
         
-        // ACTION: NAYA PASSWORD SET KARNA
-        else if (action === 'reset_password' && token && newPassword) {
-            const tokenData = resetTokens[token];
-            // Check karein ke token valid hai aur expire nahi hua
-            if (!tokenData || tokenData.expires < Date.now()) {
-                return { statusCode: 400, body: JSON.stringify({ message: 'Aap ka reset link ghalat ya expire ho chuka hai.' }) };
+        // --- Step 2: OTP VERIFICATION ---
+        else if (email && otp) {
+            const tempData = tempOTP[email];
+            if (tempData && tempData.otp === otp) {
+                // OTP sahi hai, naya user banayein
+                const newUser = { email: email, password: tempData.password };
+                users.push(newUser);
+                delete tempOTP[email]; // Temp data delete karein
+
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ message: 'Account created successfully!', status: 'ACCOUNT_CREATED' }),
+                };
+            } else {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ message: 'Invalid OTP.', status: 'ERROR' }),
+                };
             }
-            const user = users.find(u => u.email === tokenData.email);
-            if (!user) {
-                return { statusCode: 404, body: JSON.stringify({ message: 'User nahi mila.' }) };
-            }
-            // Password update karein
-            user.password = newPassword;
-            delete resetTokens[token]; // Token istemal ho gaya, ab delete kar dein
-            
-            return { statusCode: 200, body: JSON.stringify({ message: 'Password kamyabi se update ho gaya. Baraye meharbani, dobara login karein.' }) };
         }
         
-        // AGAR KOI GHALAT ACTION HO
+        // Agar request ghalat hai
         else {
-            return { statusCode: 400, body: JSON.stringify({ message: 'Invalid action.' }) };
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ message: 'Invalid request.', status: 'ERROR' }),
+            };
         }
+
     } catch (error) {
-        // Error ko aasan tareeqe se log karein
-        console.error('Server Error:', error.response ? JSON.stringify(error.response.body) : error);
-        return { statusCode: 500, body: JSON.stringify({ message: 'Server mein masla hua. Baraye meharbani, admin se rabta karein.' }) };
+        return { statusCode: 500, body: JSON.stringify({ message: 'Server error.', error: error.message }) };
     }
 };
