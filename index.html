@@ -11,39 +11,51 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- GLOBAL STYLES --- */
-        :root { --primary: #0d6b84; --secondary: #fd7e14; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; --light: #f8f9fa; --dark: #343a40; --gray: #6c757d; --white: #ffffff; --text: #333333; }
+        :root { --primary: #4682B4; --secondary: #FF8C00; --dark: #212529; --light-blue: #ADD8E6; --white: #ffffff; --text: #333333; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f0f2f5; color: var(--text); line-height: 1.6; scroll-behavior: smooth; }
-        
-        /* --- HEADER & NAVIGATION --- */
-        header { background-color: var(--dark); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        body, html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: var(--white); color: var(--text); line-height: 1.6; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .main-nav { display: flex; align-items: center; gap: 20px; }
-        nav ul { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 25px; }
-        nav a { text-decoration: none; color: var(--white); font-weight: 500; font-size: 16px; transition: color 0.2s; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; }
-        nav a:hover, .has-dropdown > a:hover { color: var(--dark); background-color: var(--secondary); }
-        .has-dropdown { position: relative; }
-        .dropdown-menu { display: none; position: absolute; top: 140%; left: 0; background-color: var(--dark); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-radius: 8px; list-style: none; min-width: 240px; z-index: 1100; padding: 10px 0; border: 1px solid rgba(255,255,255,0.1); }
-        .dropdown-menu a { padding: 12px 20px; display: flex; align-items: center; gap: 12px; width: 100%; color: var(--white); font-weight: normal; border-radius: 0; }
-        .dropdown-menu a:hover { background-color: var(--primary); color: var(--white); }
-        .dropdown-menu.show { display: block; animation: fadeIn 0.3s ease; }
-        
-        /* --- Let's Talk Button --- */
-        .cta-button { background-color: var(--secondary); color: var(--white); padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .cta-button:hover { background-color: #e86a04; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(253, 126, 20, 0.3); }
+        .page { display: none; } /* Sab pages ko shuru mein hide kar dein */
 
-        /* --- PAGES & FORMS --- */
-        .page { min-height: calc(100vh - 70px); padding: 50px 0; }
-        .auth-form-container { max-width: 500px; margin: 0 auto; background: var(--white); padding: 40px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
-        .auth-title { text-align: center; color: var(--primary); margin-bottom: 15px; font-size: 32px; position: relative; padding-bottom: 15px; }
-        .auth-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: var(--secondary); border-radius: 2px; }
-        .form-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text); }
-        input { width: 100%; padding: 14px 20px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
-        .btn-auth { width: 100%; padding: 16px; background-color: var(--primary); color: var(--white); border: none; border-radius: 10px; font-size: 17px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
-        .otp-section { background-color: #e7f4ff; border-radius: 10px; padding: 25px; margin-top: 20px; border-left: 4px solid var(--primary); }
-        .otp-info { text-align: center; margin-bottom: 20px; }
+        /* --- HEADER --- */
+        header { background-color: var(--dark); padding: 10px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--secondary); }
+        .header-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-ggp { font-weight: 700; font-size: 24px; color: var(--white); border: 2px solid var(--secondary); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: #343a40; }
+        .logo-text { font-size: 22px; font-weight: 600; color: var(--white); text-decoration: none; }
+        nav ul { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 10px; }
+        nav a { text-decoration: none; color: var(--white); font-weight: 500; font-size: 16px; padding: 8px 15px; border-radius: 20px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        nav a:hover, .has-dropdown > a:hover { background-color: var(--secondary); color: var(--dark); }
+        .has-dropdown { position: relative; }
+        .dropdown-menu { display: none; position: absolute; top: 140%; right: 0; background-color: var(--dark); box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 8px; list-style: none; min-width: 240px; z-index: 1100; padding: 10px 0; border: 1px solid var(--secondary); }
+        .dropdown-menu a { padding: 12px 20px; width: 100%; border-radius: 0; }
+        .dropdown-menu a:hover { background-color: var(--primary); }
+        .dropdown-menu.show { display: block; animation: fadeIn 0.3s ease; }
+        .cta-button { background-color: var(--secondary); color: var(--dark); padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s; }
+        .cta-button:hover { background-color: var(--white); transform: scale(1.05); }
+
+        /* --- HERO SECTION --- */
+        .hero { background-color: var(--primary); color: var(--dark); min-height: 500px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 60px 20px; }
+        .hero h1 { font-size: 4rem; font-weight: 900; line-height: 1.2; margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 40px; color: #f0f0f0; }
+        .hero-buttons { display: flex; justify-content: center; gap: 20px; }
+        .btn { padding: 15px 35px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1rem; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; }
+        .btn-primary { background-color: var(--secondary); color: var(--dark); border: 2px solid var(--secondary); }
+        .btn-primary:hover { background-color: transparent; color: var(--white); border-color: var(--white); }
+        .btn-outline { background-color: transparent; color: var(--white); border: 2px solid var(--white); }
+        .btn-outline:hover { background-color: var(--white); color: var(--dark); }
+        
+        /* --- AUTH FORMS --- */
+        .auth-page { background-color: #e9ecef; min-height: calc(100vh - 70px); padding: 50px 20px; display: flex; align-items: center; justify-content: center; }
+        .auth-form-container { max-width: 450px; width: 100%; background: var(--white); padding: 40px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .auth-title { text-align: center; color: var(--dark); margin-bottom: 30px; font-weight: 700; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input { width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; }
+        .btn-auth { width: 100%; padding: 15px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
+        .btn-auth:hover { background-color: #367299; }
+        .otp-section { background-color: #f0f8ff; border-radius: 10px; padding: 25px; margin-top: 20px; }
         .otp-input-group { display: flex; gap: 10px; justify-content: center; }
         .otp-input { width: 45px; height: 55px; text-align: center; font-size: 22px; }
 
@@ -54,30 +66,53 @@
 
     <header>
         <div class="container header-container">
+            <a href="#" class="logo-text" onclick="showPage('homePage')">
+                <div class="logo">
+                    <span class="logo-ggp">GGP</span>
+                    getguestposts.com
+                </div>
+            </a>
             <nav>
                 <ul>
+                    <li><a href="#" onclick="showPage('homePage')"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-cogs"></i> Services</a></li>
+                    <li><a href="#"><i class="fas fa-tag"></i> Pricing</a></li>
+                    <li><a href="#"><i class="fas fa-blog"></i> Blog</a></li>
                     <li class="has-dropdown">
                         <a href="#"><i class="fas fa-tools"></i> Tools <i class="fas fa-chevron-down fa-xs"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#"><i class="fas fa-envelope"></i> Email Verifier</a></li>
-                            <li><a href="#"><i class="fas fa-image"></i> Image to Text</a></li>
-                            <li><a href="#"><i class="fas fa-chart-line"></i> DA PA Checker</a></li>
-                            <li id="signupNavLi"><a href="#" onclick="showPage('signupPage')"><i class="fas fa-user-plus"></i> Sign Up / Login</a></li>
+                            <li><a href="#">Email Verifier</a></li>
+                            <li><a href="#">Image to Text</a></li>
+                            <li><a href="#">DA PA Checker</a></li>
+                            <li><a href="#" onclick="showPage('signupPage')"><i class="fas fa-user-plus"></i> Sign Up / Login</a></li>
                         </ul>
                     </li>
+                    <li><a href="#" class="cta-button">Let's Talk</a></li>
                 </ul>
             </nav>
-            <a href="#" class="cta-button"><i class="fas fa-comments"></i> Let's Talk</a>
         </div>
     </header>
 
     <main>
-        <!-- Signup/Login Page -->
-        <div id="signupPage" class="page">
+        <!-- Home Page Content -->
+        <div id="homePage" class="page">
+            <section class="hero">
+                <div class="container">
+                    <h1>Boost your SEO with our<br>Trusted link building<br>service.</h1>
+                    <p>We strive to build high-quality backlinks that will ultimately improve the SEO performance of your website.</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn btn-primary"><i class="fas fa-rocket"></i> Get Started</a>
+                        <a href="#" class="btn btn-outline"><i class="fas fa-play-circle"></i> Watch Demo</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Signup/Login Page Content -->
+        <div id="signupPage" class="page auth-page">
             <div class="auth-form-container">
                 <h1 class="auth-title">Login or Create Account</h1>
                 <form id="signupForm" onsubmit="event.preventDefault();">
-                    <!-- Step 1: Email and Password -->
                     <div id="signupStep1">
                         <div class="form-group">
                             <label for="signupEmail">Email Address:</label>
@@ -89,24 +124,8 @@
                         </div>
                         <button type="button" id="continueBtn" class="btn-auth">Continue</button>
                     </div>
-
-                    <!-- Step 2: OTP Entry -->
                     <div id="signupStep2" style="display: none;" class="otp-section">
-                        <div class="otp-info">
-                            <p>We've sent a 6-digit code to:<br><strong id="otpEmailDisplay"></strong></p>
-                        </div>
-                        <div class="form-group">
-                            <label>Verification Code:</label>
-                            <div class="otp-input-group">
-                                <input type="text" class="otp-input" maxlength="1">
-                                <input type="text" class="otp-input" maxlength="1">
-                                <input type="text" class="otp-input" maxlength="1">
-                                <input type="text" class="otp-input" maxlength="1">
-                                <input type="text" class="otp-input" maxlength="1">
-                                <input type="text" class="otp-input" maxlength="1">
-                            </div>
-                        </div>
-                        <button type="button" id="verifyOtpBtn" class="btn-auth">Verify & Create Account</button>
+                        <!-- OTP content goes here -->
                     </div>
                 </form>
             </div>
@@ -114,43 +133,21 @@
     </main>
 
     <script>
-        // =======================================================
-        // ▼▼▼ YEH WOH CODE HAI JISAY THEEK KIYA GAYA HAI ▼▼▼
-        // =======================================================
-
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- Dropdown Menu Logic ---
             document.addEventListener('click', (e) => {
-                // Find the dropdown toggle that was clicked
                 const dropdownToggle = e.target.closest('.has-dropdown > a');
-                
-                // Get all currently open menus
-                const openMenus = document.querySelectorAll('.dropdown-menu.show');
-
-                // If a toggle button was clicked
                 if (dropdownToggle) {
-                    e.preventDefault(); // Prevent link from navigating
-                    const parentLi = dropdownToggle.parentElement;
-                    const menu = parentLi.querySelector('.dropdown-menu');
-                    const wasOpen = menu.classList.contains('show');
-
-                    // First, close all menus
-                    openMenus.forEach(m => m.classList.remove('show'));
-
-                    // If the one we clicked wasn't already open, open it
-                    if (!wasOpen) {
-                        menu.classList.add('show');
-                    }
-                } 
-                // If the click was anywhere else on the page (but not inside an open menu)
-                else if (!e.target.closest('.dropdown-menu')) {
-                    // Close all open menus
-                    openMenus.forEach(m => m.classList.remove('show'));
+                    e.preventDefault();
+                    const menu = dropdownToggle.parentElement.querySelector('.dropdown-menu');
+                    menu.classList.toggle('show');
+                } else if (!e.target.closest('.has-dropdown')) {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
                 }
             });
 
-            // --- Page Navigation (Simple Show/Hide) ---
+            // --- Page Navigation ---
             window.showPage = (pageId) => {
                 document.querySelectorAll('.page').forEach(page => {
                     page.style.display = 'none';
@@ -159,35 +156,17 @@
                 if (targetPage) {
                     targetPage.style.display = 'block';
                 }
-                 // Dropdown menu band kar dein jab koi link click ho
                 document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
             };
 
-            // Initially show the signup page by default
-            showPage('signupPage');
+            // --- Default Page to Show on Load ---
+            showPage('homePage');
 
-
-            // --- Auth Form Logic ---
+            // --- Authentication Logic (Your existing JS for forms) ---
             const continueBtn = document.getElementById('continueBtn');
-            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-
-            continueBtn.addEventListener('click', async () => {
-                // ... (Your existing fetch logic for signup/login)
-                // For demonstration, let's just switch to OTP view
-                const email = document.getElementById('signupEmail').value;
-                if(email) {
-                    document.getElementById('otpEmailDisplay').textContent = email;
-                    document.getElementById('signupStep1').style.display = 'none';
-                    document.getElementById('signupStep2').style.display = 'block';
-                    alert("OTP has been sent (This is a front-end simulation).");
-                } else {
-                    alert("Please enter an email.");
-                }
-            });
-
-            verifyOtpBtn.addEventListener('click', () => {
-                 // ... (Your existing fetch logic for OTP verification)
-                alert("Account created successfully! (Simulation)");
+            continueBtn.addEventListener('click', () => {
+                // Yahan aap ka fetch() wala logic aayega
+                alert("Continue button clicked. Implement fetch logic here.");
             });
 
         });
