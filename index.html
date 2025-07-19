@@ -1,277 +1,286 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Boost your SEO with trusted link building services and tools like Email Verifier, Image to Text Converter, and DA PA Checker at getguestposts.com.">
-    <meta name="keywords" content="SEO, link building, email verifier, image to text, DA PA checker, guest posts">
-    <meta name="author" content="getguestposts.com">
-    <meta name="robots" content="index, follow">
-    <title>Get Guest Posts - Your SEO Tools</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* --- GLOBAL STYLES --- */
-        :root { --primary: #4682B4; --secondary: #FF8C00; --dark: #212529; --light-blue: #ADD8E6; --white: #ffffff; --text: #333333; --danger: #dc3545; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: var(--white); color: var(--text); line-height: 1.6; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .page { display: none; } /* Sab pages ko shuru mein hide kar dein */
+<!-- YEH AAP KE INDEX.HTML KE AKHRI HISSE MEIN SCRIPT TAG KE ANDAR AAYEGA -->
+<script>
+    // --- Baki sara code waisa hi rahega (DOM elements, Page Management, etc.) ---
+    const ctaButton = document.getElementById('ctaButton');
+    const userProfile = document.getElementById('userProfile');
+    const signupNavLi = document.getElementById('signupNavLi'); 
+    const redirectMessage = document.getElementById('redirectMessage'); 
+    const profileDropdownEmail = document.getElementById('profileDropdownEmail');
+    const profileImageInput = document.getElementById('profileImageInput');
+    const mainProfilePicContainer = document.getElementById('profilePic');
+    const dropdownAvatarContainer = document.querySelector('.profile-avatar');
 
-        /* --- HEADER --- */
-        header { background-color: var(--dark); padding: 10px 0; position: sticky; top: 0; z-index: 1000; border-bottom: 3px solid var(--secondary); }
-        .header-container { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 15px; }
-        .logo-ggp { font-weight: 700; font-size: 24px; color: var(--white); border: 2px solid var(--secondary); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; background-color: #343a40; }
-        .logo-text { font-size: 22px; font-weight: 600; color: var(--white); text-decoration: none; }
-        nav ul { margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 10px; }
-        nav a { text-decoration: none; color: var(--white); font-weight: 500; font-size: 16px; padding: 8px 15px; border-radius: 20px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-        nav a:hover, .has-dropdown > a:hover { background-color: var(--secondary); color: var(--dark); }
-        .has-dropdown { position: relative; }
-        .dropdown-menu { display: none; position: absolute; top: 140%; right: 0; background-color: var(--dark); box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 8px; list-style: none; min-width: 240px; z-index: 1100; padding: 10px 0; border: 1px solid var(--secondary); }
-        .dropdown-menu a { padding: 12px 20px; width: 100%; border-radius: 0; }
-        .dropdown-menu a:hover { background-color: var(--primary); }
-        .dropdown-menu.show { display: block; animation: fadeIn 0.3s ease; }
-        .cta-button { background-color: var(--secondary); color: var(--dark); padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: bold; transition: all 0.3s; }
-        .cta-button:hover { background-color: var(--white); transform: scale(1.05); }
-
-        /* --- HERO SECTION --- */
-        .hero { background-color: var(--primary); color: var(--dark); min-height: 500px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 60px 20px; }
-        .hero h1 { font-size: 4rem; font-weight: 900; line-height: 1.2; margin-bottom: 20px; }
-        .hero p { font-size: 1.2rem; max-width: 700px; margin: 0 auto 40px; color: #f0f0f0; }
-        .hero-buttons { display: flex; justify-content: center; gap: 20px; }
-        .btn { padding: 15px 35px; border-radius: 30px; text-decoration: none; font-weight: bold; font-size: 1rem; transition: all 0.3s; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-primary { background-color: var(--secondary); color: var(--dark); border: 2px solid var(--secondary); }
-        .btn-primary:hover { background-color: transparent; color: var(--white); border-color: var(--white); }
-        .btn-outline { background-color: transparent; color: var(--white); border: 2px solid var(--white); }
-        .btn-outline:hover { background-color: var(--white); color: var(--dark); }
+    // --- AUTHENTICATION STATE MANAGEMENT (Ab server se link hoga) ---
+    const authState = {
+        isAuthenticated: false,
+        userEmail: null,
         
-        /* --- AUTH FORMS --- */
-        .auth-page { background-color: #e9ecef; min-height: calc(100vh - 70px); padding: 50px 20px; display: flex; align-items: center; justify-content: center; }
-        .auth-form-container { max-width: 450px; width: 100%; background: var(--white); padding: 40px; border-radius: 15px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-        .auth-title { text-align: center; color: var(--dark); margin-bottom: 30px; font-weight: 700; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
-        input { width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; }
-        .btn-auth { width: 100%; padding: 15px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
-        .btn-auth:hover:not(:disabled) { background-color: #367299; }
-        .btn-auth:disabled { background-color: #aaa; cursor: not-allowed; }
-        .otp-section { background-color: #f0f8ff; border-radius: 10px; padding: 25px; margin-top: 20px; }
-        .otp-input-group { display: flex; gap: 10px; justify-content: center; }
-        .otp-input { width: 45px; height: 55px; text-align: center; font-size: 22px; }
-        .error-message { color: var(--danger); font-size: 14px; margin-top: 10px; display: none; }
+        init() {
+            // Ab hum page load par session se check karenge, localStorage se nahi
+            const authData = sessionStorage.getItem('authData'); // Session storage behtar hai
+            if (authData) {
+                const { isAuthenticated, userEmail } = JSON.parse(authData);
+                this.isAuthenticated = isAuthenticated;
+                this.userEmail = userEmail;
+            }
+            updateNavigationState(); 
+            loadProfilePicture();
+        },
+        
+        login(email) {
+            this.isAuthenticated = true;
+            this.userEmail = email;
+            this.save();
+            updateNavigationState(); 
+        },
+        
+        logout() {
+            this.isAuthenticated = false;
+            this.userEmail = null;
+            sessionStorage.removeItem('authData');
+            sessionStorage.removeItem('profileImageData');
+            updateNavigationState(); 
+            resetProfilePictures();
+        },
+        
+        save() {
+            const authData = JSON.stringify({
+                isAuthenticated: this.isAuthenticated,
+                userEmail: this.userEmail
+            });
+            sessionStorage.setItem('authData', authData);
+        }
+    };
+    // ... (Yahan baki sara code jaise updateNavigationState, logoutUser, etc. waisa hi rahega)
+    function updateNavigationState() {
+        if (authState.isAuthenticated) {
+            ctaButton.style.display = 'none';
+            userProfile.style.display = 'block';
+            signupNavLi.style.display = 'none'; 
+            profileDropdownEmail.textContent = authState.userEmail;
+        } else {
+            ctaButton.style.display = 'inline-flex';
+            userProfile.style.display = 'none';
+            signupNavLi.style.display = 'list-item'; 
+        }
+    }
+    function logoutUser() {
+        if (confirm("Are you sure you want to log out?")) {
+            authState.logout();
+            alert("You have been successfully logged out.");
+            showMainPage();
+        }
+    }
+    // ... (profile picture aur page management ka code bhi waisa hi rahega)
+    function uploadProfileImage() { profileImageInput.click(); }
+    profileImageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const imageDataUrl = reader.result;
+            sessionStorage.setItem('profileImageData', imageDataUrl);
+            updateProfilePictures(imageDataUrl);
+        };
+        reader.readAsDataURL(file);
+    });
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
+    function updateProfilePictures(imageDataUrl) {
+        mainProfilePicContainer.innerHTML = `<img src="${imageDataUrl}" alt="Profile Picture">`;
+        dropdownAvatarContainer.innerHTML = `<img src="${imageDataUrl}" alt="Profile Picture">`;
+    }
 
-    <header>
-        <div class="container header-container">
-            <a href="#" class="logo-text" onclick="showPage('homePage')">
-                <div class="logo">
-                    <span class="logo-ggp">GGP</span>
-                    getguestposts.com
-                </div>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="#" onclick="showPage('homePage')"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="#"><i class="fas fa-cogs"></i> Services</a></li>
-                    <li><a href="#"><i class="fas fa-tag"></i> Pricing</a></li>
-                    <li><a href="#"><i class="fas fa-blog"></i> Blog</a></li>
-                    <li class="has-dropdown">
-                        <a href="#"><i class="fas fa-tools"></i> Tools <i class="fas fa-chevron-down fa-xs"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Email Verifier</a></li>
-                            <li><a href="#">Image to Text</a></li>
-                            <li><a href="#">DA PA Checker</a></li>
-                            <li><a href="#" onclick="showPage('signupPage')"><i class="fas fa-user-plus"></i> Sign Up / Login</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#" class="cta-button">Let's Talk</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    function resetProfilePictures() {
+        mainProfilePicContainer.innerHTML = `<i class="fas fa-user"></i>`;
+        dropdownAvatarContainer.innerHTML = `<i class="fas fa-user"></i>`;
+    }
 
-    <main>
-        <!-- Home Page Content -->
-        <div id="homePage" class="page">
-            <section class="hero">
-                <div class="container">
-                    <h1>Boost your SEO with our<br>Trusted link building<br>service.</h1>
-                    <p>We strive to build high-quality backlinks that will ultimately improve the SEO performance of your website.</p>
-                    <div class="hero-buttons">
-                        <a href="#" class="btn btn-primary"><i class="fas fa-rocket"></i> Get Started</a>
-                        <a href="#" class="btn btn-outline"><i class="fas fa-play-circle"></i> Watch Demo</a>
-                    </div>
-                </div>
-            </section>
-        </div>
+    function loadProfilePicture() {
+        const savedImage = sessionStorage.getItem('profileImageData');
+        if (savedImage && authState.isAuthenticated) {
+            updateProfilePictures(savedImage);
+        }
+    }
+    const mainPageDiv = document.getElementById('mainPage');
+    const toolPageDiv = document.getElementById('toolPage');
+    const signupPageDiv = document.getElementById('signupPage');
 
-        <!-- Signup/Login Page Content -->
-        <div id="signupPage" class="page auth-page">
-            <div class="auth-form-container">
-                <h1 class="auth-title">Login or Create Account</h1>
-                <form id="signupForm" onsubmit="event.preventDefault();">
-                    <!-- Step 1: Email and Password -->
-                    <div id="signupStep1">
-                        <div class="form-group">
-                            <label for="signupEmail">Email Address:</label>
-                            <input type="email" id="signupEmail" required placeholder="your@email.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="signupPassword">Password:</label>
-                            <input type="password" id="signupPassword" required placeholder="Min 6 characters">
-                        </div>
-                        <button type="button" id="continueBtn" class="btn-auth">Continue</button>
-                        <div id="errorMsg" class="error-message"></div>
-                    </div>
-                    <!-- Step 2: OTP Entry -->
-                    <div id="signupStep2" style="display: none;" class="otp-section">
-                        <p style="text-align: center;">We've sent a 6-digit code to:<br><strong id="otpEmailDisplay"></strong></p>
-                        <div class="form-group">
-                            <label>Verification Code:</label>
-                            <div class="otp-input-group">
-                                <input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1">
-                            </div>
-                        </div>
-                        <button type="button" id="verifyOtpBtn" class="btn-auth">Verify & Create Account</button>
-                        <div id="errorMsg2" class="error-message"></div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </main>
+    function showMainPage() {
+        mainPageDiv.style.display = 'flex';
+        toolPageDiv.style.display = 'none';
+        signupPageDiv.style.display = 'none';
+        window.scrollTo(0, 0); 
+    }
+    function showToolPage(toolType) {
+        if (!authState.isAuthenticated) {
+            showSignupPage(true); 
+            return;
+        }
+        mainPageDiv.style.display = 'none';
+        signupPageDiv.style.display = 'none';
+        toolPageDiv.style.display = 'block';
+        let toolTitle = 'SEO Tool';
+        switch(toolType) {
+            case 'email-verifier': toolTitle = 'Visual Bulk Email Verifier'; break;
+            case 'image-to-text': toolTitle = 'Image to Text Converter'; break;
+            case 'da-pa-checker': toolTitle = 'DA PA Checker'; break;
+        }
+        document.querySelector('#toolPage h1').innerHTML = `<i class="fas fa-${getToolIcon(toolType)}"></i> ${toolTitle}`;
+        window.scrollTo(0, 0); 
+    }
+    function getToolIcon(toolType) {
+        switch(toolType) {
+            case 'email-verifier': return 'envelope';
+            case 'image-to-text': return 'image';
+            case 'da-pa-checker': return 'chart-line';
+            default: return 'toolbox';
+        }
+    }
+    function showSignupPage(fromToolRedirect = false) {
+        redirectMessage.style.display = fromToolRedirect ? 'block' : 'none';
+        mainPageDiv.style.display = 'none';
+        toolPageDiv.style.display = 'none';
+        signupPageDiv.style.display = 'block';
+        document.getElementById('signupStep1').style.display = 'block';
+        document.getElementById('signupStep2').style.display = 'none';
+        document.getElementById('signupForm').reset();
+        errorMsg.style.display = 'none';
+        errorMsg2.style.display = 'none';
+        window.scrollTo(0, 0); 
+    }
+    authState.init();
+    // ... (Dropdown, Email Verifier Tool ka code bhi waisa hi rakhein)
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- Dropdown Menu Logic ---
-            document.addEventListener('click', (e) => {
-                const dropdownToggle = e.target.closest('.has-dropdown > a');
-                if (dropdownToggle) {
-                    e.preventDefault();
-                    const menu = dropdownToggle.parentElement.querySelector('.dropdown-menu');
-                    menu.classList.toggle('show');
-                } else if (!e.target.closest('.has-dropdown')) {
-                    document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
-                }
+
+    // --- YAHAN SE NAYA AUR BEHTAR SIGNUP/LOGIN LOGIC SHURU HOTA HAI ---
+    
+    const signupStep1 = document.getElementById('signupStep1');
+    const signupStep2 = document.getElementById('signupStep2');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const otpInputs = document.querySelectorAll('.otp-input');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const errorMsg2 = document.getElementById('errorMsg2');
+    const togglePassword = document.getElementById('togglePassword');
+    const otpEmailDisplay = document.getElementById('otpEmailDisplay');
+    const continueBtn = document.getElementById('continueBtn');
+    const backBtn = document.getElementById('backBtn');
+
+    // 'Continue' button par click karne se server se baat hogi
+    continueBtn.addEventListener('click', async () => {
+        const email = signupEmail.value.trim();
+        const password = signupPassword.value.trim();
+        errorMsg.style.display = 'none';
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6) {
+            errorMsg.textContent = 'Please enter a valid email and a password of at least 6 characters.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        continueBtn.disabled = true;
+        continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+
+        try {
+            const response = await fetch('/.netlify/functions/auth-handler', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
             });
 
-            // --- Page Navigation ---
-            window.showPage = (pageId) => {
-                document.querySelectorAll('.page').forEach(page => {
-                    page.style.display = 'none';
-                });
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.style.display = 'block';
-                }
-                document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
-            };
+            const result = await response.json();
 
-            // --- Default Page to Show on Load ---
-            showPage('homePage');
-
-            // =======================================================
-            // ▼▼▼ ASAL, KAAM KARNE WALA FETCH LOGIC ▼▼▼
-            // =======================================================
-            const continueBtn = document.getElementById('continueBtn');
-            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-            const errorDiv1 = document.getElementById('errorMsg');
-            const errorDiv2 = document.getElementById('errorMsg2');
-
-            continueBtn.addEventListener('click', async () => {
-                const email = document.getElementById('signupEmail').value.trim();
-                const password = document.getElementById('signupPassword').value.trim();
-                
-                errorDiv1.style.display = 'none';
-
-                if (!email || password.length < 6) {
-                    errorDiv1.textContent = 'Please enter a valid email and password (min 6 characters).';
-                    errorDiv1.style.display = 'block';
-                    return;
-                }
-
-                continueBtn.disabled = true;
-                continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                
-                try {
-                    const response = await fetch('/.netlify/functions/auth-handler', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password, action: 'login_signup' })
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(result.message || 'An unknown error occurred.');
-                    }
-
-                    if (result.status === 'OTP_SENT') {
-                        document.getElementById('otpEmailDisplay').textContent = email;
-                        document.getElementById('signupStep1').style.display = 'none';
-                        document.getElementById('signupStep2').style.display = 'block';
-                        alert(result.message); 
-                    } else if (result.status === 'LOGGED_IN') {
-                        alert(result.message);
-                        showPage('homePage'); 
-                    }
-
-                } catch (err) {
-                    errorDiv1.textContent = err.message;
-                    errorDiv1.style.display = 'block';
-                } finally {
-                    continueBtn.disabled = false;
-                    continueBtn.textContent = 'Continue';
-                }
-            });
-
-            verifyOtpBtn.addEventListener('click', async () => {
-                const email = document.getElementById('signupEmail').value.trim();
-                const otp = Array.from(document.querySelectorAll('.otp-input')).map(input => input.value).join('');
-                
-                errorDiv2.style.display = 'none';
-
-                if (otp.length !== 6) {
-                    errorDiv2.textContent = 'Please enter the complete 6-digit code.';
-                    errorDiv2.style.display = 'block';
-                    return;
-                }
-                
-                verifyOtpBtn.disabled = true;
-                verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-
-                try {
-                    const response = await fetch('/.netlify/functions/auth-handler', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, otp, action: 'verify_otp' })
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(result.message || 'An unknown error occurred.');
-                    }
-
+            if (response.ok) {
+                if (result.status === 'LOGGED_IN') {
+                    // Login kamyab
+                    authState.login(email);
                     alert(result.message);
-                    showPage('homePage');
-
-                } catch (err) {
-                    errorDiv2.textContent = err.message;
-                    errorDiv2.style.display = 'block';
-                } finally {
-                    verifyOtpBtn.disabled = false;
-                    verifyOtpBtn.textContent = 'Verify & Create Account';
+                    showToolPage('email-verifier');
+                } else if (result.status === 'OTP_SENT') {
+                    // OTP bhej diya gaya, ab OTP screen dikhayen
+                    otpEmailDisplay.textContent = email;
+                    signupStep1.style.display = 'none';
+                    signupStep2.style.display = 'block';
+                    otpInputs[0].focus();
+                    alert("A verification code has been sent. For testing, check the server logs on Netlify for the OTP.");
                 }
+            } else {
+                // Server se error aaya
+                errorMsg.textContent = result.message || 'An error occurred.';
+                errorMsg.style.display = 'block';
+            }
+        } catch (err) {
+            errorMsg.textContent = 'Could not connect to the server. Please try again.';
+            errorMsg.style.display = 'block';
+        }
+
+        continueBtn.disabled = false;
+        continueBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Continue';
+    });
+
+    // OTP Verify button par click
+    verifyOtpBtn.addEventListener('click', async () => {
+        const email = signupEmail.value.trim();
+        let otp = Array.from(otpInputs).map(input => input.value).join('');
+        errorMsg2.style.display = 'none';
+
+        if (otp.length !== 6) {
+            errorMsg2.textContent = 'Please enter the 6-digit code.';
+            errorMsg2.style.display = 'block';
+            return;
+        }
+
+        verifyOtpBtn.disabled = true;
+        verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+        try {
+             const response = await fetch('/.netlify/functions/auth-handler', {
+                method: 'POST',
+                body: JSON.stringify({ email, otp }),
             });
+            const result = await response.json();
 
+            if (response.ok && result.status === 'ACCOUNT_CREATED') {
+                authState.login(email);
+                alert(result.message);
+                showToolPage('email-verifier');
+            } else {
+                errorMsg2.textContent = result.message || 'Verification failed.';
+                errorMsg2.style.display = 'block';
+            }
+
+        } catch(err) {
+             errorMsg2.textContent = 'Could not connect to the server.';
+             errorMsg2.style.display = 'block';
+        }
+        
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Create Account';
+    });
+    
+    togglePassword.addEventListener('click', () => {
+        const type = signupPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+        signupPassword.setAttribute('type', type);
+        togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && index < otpInputs.length - 1) {
+                otpInputs[index + 1].focus();
+            }
         });
-    </script>
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                otpInputs[index - 1].focus();
+            }
+        });
+    });
 
-</body>
-</html>
+    backBtn.addEventListener('click', () => {
+        signupStep2.style.display = 'none';
+        signupStep1.style.display = 'block';
+        errorMsg.style.display = 'none';
+        errorMsg2.style.display = 'none';
+    });
+</script>
