@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- GLOBAL STYLES --- */
-        :root { --primary: #4682B4; --secondary: #FF8C00; --dark: #212529; --light-blue: #ADD8E6; --white: #ffffff; --text: #333333; }
+        :root { --primary: #4682B4; --secondary: #FF8C00; --dark: #212529; --light-blue: #ADD8E6; --white: #ffffff; --text: #333333; --danger: #dc3545; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: var(--white); color: var(--text); line-height: 1.6; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
@@ -54,10 +54,12 @@
         input { width: 100%; padding: 12px 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
         input:focus { border-color: var(--primary); outline: none; }
         .btn-auth { width: 100%; padding: 15px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
-        .btn-auth:hover { background-color: #367299; }
+        .btn-auth:hover:not(:disabled) { background-color: #367299; }
+        .btn-auth:disabled { background-color: #aaa; cursor: not-allowed; }
         .otp-section { background-color: #f0f8ff; border-radius: 10px; padding: 25px; margin-top: 20px; }
         .otp-input-group { display: flex; gap: 10px; justify-content: center; }
         .otp-input { width: 45px; height: 55px; text-align: center; font-size: 22px; }
+        .error-message { color: var(--danger); font-size: 14px; margin-top: 10px; display: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -113,6 +115,7 @@
             <div class="auth-form-container">
                 <h1 class="auth-title">Login or Create Account</h1>
                 <form id="signupForm" onsubmit="event.preventDefault();">
+                    <!-- Step 1: Email and Password -->
                     <div id="signupStep1">
                         <div class="form-group">
                             <label for="signupEmail">Email Address:</label>
@@ -123,9 +126,19 @@
                             <input type="password" id="signupPassword" required placeholder="Min 6 characters">
                         </div>
                         <button type="button" id="continueBtn" class="btn-auth">Continue</button>
+                        <div id="errorMsg" class="error-message"></div>
                     </div>
+                    <!-- Step 2: OTP Entry -->
                     <div id="signupStep2" style="display: none;" class="otp-section">
-                        <!-- OTP content goes here -->
+                        <p style="text-align: center;">We've sent a 6-digit code to:<br><strong id="otpEmailDisplay"></strong></p>
+                        <div class="form-group">
+                            <label>Verification Code:</label>
+                            <div class="otp-input-group">
+                                <input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1"><input type="text" class="otp-input" maxlength="1">
+                            </div>
+                        </div>
+                        <button type="button" id="verifyOtpBtn" class="btn-auth">Verify & Create Account</button>
+                        <div id="errorMsg2" class="error-message"></div>
                     </div>
                 </form>
             </div>
@@ -162,11 +175,99 @@
             // --- Default Page to Show on Load ---
             showPage('homePage');
 
-            // --- Authentication Logic (Your existing JS for forms) ---
+            // =======================================================
+            // ▼▼▼ ASAL, KAAM KARNE WALA FETCH LOGIC ▼▼▼
+            // =======================================================
             const continueBtn = document.getElementById('continueBtn');
-            continueBtn.addEventListener('click', () => {
-                // Yahan aap ka fetch() wala logic aayega
-                alert("Continue button clicked. Implement fetch logic here.");
+            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+            const errorDiv1 = document.getElementById('errorMsg');
+            const errorDiv2 = document.getElementById('errorMsg2');
+
+            continueBtn.addEventListener('click', async () => {
+                const email = document.getElementById('signupEmail').value.trim();
+                const password = document.getElementById('signupPassword').value.trim();
+                
+                errorDiv1.style.display = 'none';
+
+                if (!email || password.length < 6) {
+                    errorDiv1.textContent = 'Please enter a valid email and password (min 6 characters).';
+                    errorDiv1.style.display = 'block';
+                    return;
+                }
+
+                continueBtn.disabled = true;
+                continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                
+                try {
+                    const response = await fetch('/.netlify/functions/auth-handler', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password, action: 'login_signup' })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'An unknown error occurred.');
+                    }
+
+                    if (result.status === 'OTP_SENT') {
+                        document.getElementById('otpEmailDisplay').textContent = email;
+                        document.getElementById('signupStep1').style.display = 'none';
+                        document.getElementById('signupStep2').style.display = 'block';
+                        alert(result.message); 
+                    } else if (result.status === 'LOGGED_IN') {
+                        alert(result.message);
+                        showPage('homePage'); 
+                    }
+
+                } catch (err) {
+                    errorDiv1.textContent = err.message;
+                    errorDiv1.style.display = 'block';
+                } finally {
+                    continueBtn.disabled = false;
+                    continueBtn.textContent = 'Continue';
+                }
+            });
+
+            verifyOtpBtn.addEventListener('click', async () => {
+                const email = document.getElementById('signupEmail').value.trim();
+                const otp = Array.from(document.querySelectorAll('.otp-input')).map(input => input.value).join('');
+                
+                errorDiv2.style.display = 'none';
+
+                if (otp.length !== 6) {
+                    errorDiv2.textContent = 'Please enter the complete 6-digit code.';
+                    errorDiv2.style.display = 'block';
+                    return;
+                }
+                
+                verifyOtpBtn.disabled = true;
+                verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+                try {
+                    const response = await fetch('/.netlify/functions/auth-handler', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp, action: 'verify_otp' })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'An unknown error occurred.');
+                    }
+
+                    alert(result.message);
+                    showPage('homePage');
+
+                } catch (err) {
+                    errorDiv2.textContent = err.message;
+                    errorDiv2.style.display = 'block';
+                } finally {
+                    verifyOtpBtn.disabled = false;
+                    verifyOtpBtn.textContent = 'Verify & Create Account';
+                }
             });
 
         });
